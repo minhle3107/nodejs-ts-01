@@ -11,14 +11,6 @@ export const loginValidation = (req: Request, res: Response, next: NextFunction)
   next()
 }
 
-// export const registerValidation = (req: Request, res: Response, next: NextFunction) => {
-//   const { email, password } = req.body
-//   if (!email || !password) {
-//     return res.status(400).json({ error: 'Missing email or password' })
-//   }
-//   next()
-// }
-
 export const registerValidation = validate(
   checkSchema({
     name: {
