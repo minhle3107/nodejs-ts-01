@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import usersServices from '~/services/users.services'
+import { ErrorWithStatus } from '~/models/Errors'
 
 export const loginValidation = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body

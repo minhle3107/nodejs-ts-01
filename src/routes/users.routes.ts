@@ -1,6 +1,7 @@
 import express from 'express'
 import { loginValidation, registerValidation } from '~/middlewares/users.middlewares'
 import { loginController, registerController } from '~/controllers/users.controller'
+import { wrapRequestsHandler } from '~/utils/handlers'
 
 const usersRoutes = express.Router()
 
@@ -14,6 +15,6 @@ usersRoutes.post('/login', loginValidation, loginController)
  * Error: { error: string }
  *
  */
-usersRoutes.post('/register', registerValidation, registerController)
+usersRoutes.post('/register', registerValidation, wrapRequestsHandler(registerController))
 
 export default usersRoutes
