@@ -1,9 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import usersServices from '~/services/users.services'
 import USERS_MESSAGES from '~/constants/messages'
-import { isValidEmail } from '~/utils/isValidEmail'
 import databaseService from '~/services/database.services'
 
 export const loginValidation = validate(
