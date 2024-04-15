@@ -1,6 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
 import * as process from 'process'
 import { config } from 'dotenv'
+import { ITokenPayload } from '~/models/requests/User.requests'
 
 config()
 
@@ -32,12 +33,12 @@ export const verifyToken = ({
   token: string
   secretOrPublicKey?: string
 }) => {
-  return new Promise<jwt.JwtPayload>((resolve, reject) => {
+  return new Promise<ITokenPayload>((resolve, reject) => {
     jwt.verify(token, secretOrPublicKey, (error, decoded) => {
       if (error) {
         throw reject(error)
       }
-      resolve(decoded as jwt.JwtPayload)
+      resolve(decoded as ITokenPayload)
     })
   })
 }

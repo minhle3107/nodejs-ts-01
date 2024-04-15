@@ -1,6 +1,6 @@
 import User from '~/models/shcemas/User.schema'
 import databaseService from '~/services/database.services'
-import { IRegisterReqBody } from '~/models/requests/Use.requests'
+import { IRegisterReqBody } from '~/models/requests/User.requests'
 import { handleHashPassword } from '~/utils/crypto'
 import { EnumTokenType } from '~/constants/enum'
 import { handleSignToken } from '~/utils/jwt'
@@ -9,6 +9,7 @@ import databaseServices from '~/services/database.services'
 import RefreshToken from '~/models/shcemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
 import { config } from 'dotenv'
+import USERS_MESSAGES from '~/constants/messages'
 
 config()
 
@@ -74,6 +75,11 @@ class UsersServices {
       })
     )
     return { access_token, refresh_token }
+  }
+
+  async logout(refresh_token: string) {
+    await databaseServices.refreshTokens.deleteOne({ token: refresh_token })
+    return { message: USERS_MESSAGES.LOGOUT_SUCCESSFULLY }
   }
 }
 

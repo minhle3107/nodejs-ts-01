@@ -1,6 +1,11 @@
 import express from 'express'
-import { accessTokenValidation, loginValidation, registerValidation } from '~/middlewares/users.middlewares'
-import { loginController, registerController } from '~/controllers/users.controller'
+import {
+  accessTokenValidator,
+  loginValidator,
+  refreshTokenValidator,
+  registerValidator
+} from '~/middlewares/users.middlewares'
+import { loginController, logoutController, registerController } from '~/controllers/users.controller'
 import { wrapRequestsHandler } from '~/utils/handlers'
 
 const usersRoutes = express.Router()
@@ -14,7 +19,7 @@ const usersRoutes = express.Router()
  *
  */
 
-usersRoutes.post('/register', registerValidation, wrapRequestsHandler(registerController))
+usersRoutes.post('/register', registerValidator, wrapRequestsHandler(registerController))
 
 /**
  * Description: Login
@@ -24,7 +29,7 @@ usersRoutes.post('/register', registerValidation, wrapRequestsHandler(registerCo
  * Error: { error: string }
  *
  */
-usersRoutes.post('/login', loginValidation, wrapRequestsHandler(loginController))
+usersRoutes.post('/login', loginValidator, wrapRequestsHandler(loginController))
 
 /**
  * Description: Logout
@@ -36,8 +41,6 @@ usersRoutes.post('/login', loginValidation, wrapRequestsHandler(loginController)
  * Error: { error: string }
  */
 
-usersRoutes.post('/logout', accessTokenValidation, (req, res) => {
-  res.json({ message: 'Logout successfully' })
-})
+usersRoutes.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestsHandler(logoutController))
 
 export default usersRoutes

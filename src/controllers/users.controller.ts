@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import usersServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { IRegisterReqBody } from '~/models/requests/Use.requests'
+import { ILogoutReqBody, IRegisterReqBody } from '~/models/requests/User.requests'
 import { ObjectId } from 'mongodb'
 import User from '~/models/shcemas/User.schema'
 import USERS_MESSAGES from '~/constants/messages'
@@ -27,4 +27,10 @@ export const registerController = async (
     message: USERS_MESSAGES.RESIGNED_SUCCESSFULLY,
     result
   })
+}
+
+export const logoutController = async (req: Request<ParamsDictionary, any, ILogoutReqBody>, res: Response) => {
+  const { refresh_token } = req.body
+  const result = await usersServices.logout(refresh_token)
+  return res.status(200).json({ result })
 }

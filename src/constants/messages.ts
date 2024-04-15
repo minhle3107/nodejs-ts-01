@@ -37,7 +37,14 @@ const USERS_MESSAGES = {
   LOGIN_FAILED: 'Login failed',
   LOGIN_SUCCESSFULLY: 'Login successfully',
 
-  ACCESS_TOKEN_IS_REQUIRED: 'Access is required',
-  ACCESS_TOKEN_IS_INVALID: 'Access token is invalid'
+  ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
+  ACCESS_TOKEN_IS_INVALID: 'Access token is invalid',
+
+  REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
+  REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
+
+  USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist',
+
+  LOGOUT_SUCCESSFULLY: 'Logout successfully'
 } as const
 export default USERS_MESSAGES
