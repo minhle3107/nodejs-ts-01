@@ -3,6 +3,7 @@ import { validate } from '~/utils/validation'
 import usersServices from '~/services/users.services'
 import USERS_MESSAGES from '~/constants/messages'
 import databaseService from '~/services/database.services'
+import { handleHashPassword } from '~/utils/crypto'
 
 export const loginValidation = validate(
   checkSchema({
@@ -16,9 +17,12 @@ export const loginValidation = validate(
       trim: true,
       custom: {
         options: async (value, { req }) => {
-          const user = await databaseService.users.findOne({ email: value })
+          const user = await databaseService.users.findOne({
+            email: value,
+            password: handleHashPassword(req.body.password)
+          })
           if (user === null) {
-            throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+            throw new Error(USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
           }
           req.user = user
           return true

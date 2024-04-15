@@ -30,6 +30,8 @@ const USERS_MESSAGES = {
 
   RESIGNED_SUCCESSFULLY: 'Resigned successfully',
 
+  EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
+
   USER_NOT_FOUND: 'User not found',
 
   LOGIN_FAILED: 'Login failed',

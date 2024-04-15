@@ -5,7 +5,6 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { ErrorWithStatus } from '~/models/Errors'
 
 export const defaultErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  console.log(err)
   if (err instanceof ErrorWithStatus) {
     return res.status(err.status).json(omit(err, 'status'))
   }

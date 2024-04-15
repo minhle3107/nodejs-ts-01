@@ -5,6 +5,12 @@ import { handleHashPassword } from '~/utils/crypto'
 import { EnumTokenType } from '~/constants/enum'
 import { handleSignToken } from '~/utils/jwt'
 import * as process from 'process'
+import databaseServices from '~/services/database.services'
+import RefreshToken from '~/models/shcemas/RefreshToken.schema'
+import { ObjectId } from 'mongodb'
+import { config } from 'dotenv'
+
+config()
 
 class UsersServices {
   private signAccessToken(user_id: string) {
@@ -45,6 +51,12 @@ class UsersServices {
     const result = await databaseService.users.insertOne(user)
     const user_id = result.insertedId.toString()
     const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
+    await databaseServices.refreshTokens.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: refresh_token
+      })
+    )
     return { access_token, refresh_token }
   }
 
@@ -55,6 +67,12 @@ class UsersServices {
 
   async login(user_id: string) {
     const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
+    await databaseServices.refreshTokens.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: refresh_token
+      })
+    )
     return { access_token, refresh_token }
   }
 }

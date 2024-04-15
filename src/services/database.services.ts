@@ -1,9 +1,10 @@
 import { Collection, Db, MongoClient } from 'mongodb'
-import dotenv from 'dotenv'
+import { config } from 'dotenv'
 import * as process from 'process'
 import User from '~/models/shcemas/User.schema'
+import RefreshToken from '~/models/shcemas/RefreshToken.schema'
 
-dotenv.config()
+config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@twitter.rifbmvv.mongodb.net/?retryWrites=true&w=majority&appName=Twitter`
 
@@ -30,6 +31,10 @@ class DatabaseService {
 
   get users(): Collection<User> {
     return this.db.collection(process.env.DB_USER_COLLECTION as string)
+  }
+
+  get refreshTokens(): Collection<RefreshToken> {
+    return this.db.collection(process.env.DB_REFRESH_TOKENS_COLLECTION as string)
   }
 
   async disconnect() {
