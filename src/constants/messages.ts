@@ -35,6 +35,9 @@ const USERS_MESSAGES = {
   USER_NOT_FOUND: 'User not found',
 
   LOGIN_FAILED: 'Login failed',
-  LOGIN_SUCCESSFULLY: 'Login successfully'
+  LOGIN_SUCCESSFULLY: 'Login successfully',
+
+  ACCESS_TOKEN_IS_REQUIRED: 'Access is required',
+  ACCESS_TOKEN_IS_INVALID: 'Access token is invalid'
 } as const
 export default USERS_MESSAGES
