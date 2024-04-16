@@ -45,6 +45,10 @@ const USERS_MESSAGES = {
 
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist',
 
-  LOGOUT_SUCCESSFULLY: 'Logout successfully'
+  LOGOUT_SUCCESSFULLY: 'Logout successfully',
+
+  EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
+  EMAIL_ALREADY_VERIFIED_BEFORE: 'Email already verified before',
+  EMAIL_VERIFIED_SUCCESSFULLY: 'Email verified successfully'
 } as const
 export default USERS_MESSAGES

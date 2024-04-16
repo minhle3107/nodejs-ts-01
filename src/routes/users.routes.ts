@@ -1,11 +1,17 @@
 import express from 'express'
 import {
   accessTokenValidator,
+  emailVerifyTokenValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator
 } from '~/middlewares/users.middlewares'
-import { loginController, logoutController, registerController } from '~/controllers/users.controller'
+import {
+  emailVerifyTokenController,
+  loginController,
+  logoutController,
+  registerController
+} from '~/controllers/users.controller'
 import { wrapRequestsHandler } from '~/utils/handlers'
 
 const usersRoutes = express.Router()
@@ -42,5 +48,17 @@ usersRoutes.post('/login', loginValidator, wrapRequestsHandler(loginController))
  */
 
 usersRoutes.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestsHandler(logoutController))
+
+/**
+ * Description: Verify user email when user clicks on the link sent to their email
+ * Path: /verify-email
+ * Method: POST
+ * Header: { Authorization: Bearer <access_token>}
+ * Body: { email_verified_token: string }
+ * Response: { message: string }
+ * Error: { error: string }
+ */
+
+usersRoutes.post('/verify-email', emailVerifyTokenValidator, wrapRequestsHandler(emailVerifyTokenController))
 
 export default usersRoutes

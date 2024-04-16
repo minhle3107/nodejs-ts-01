@@ -9,7 +9,7 @@ interface IUserType {
   password: string
   created_at?: Date
   updated_at?: Date
-  email_verified_token?: string
+  email_verify_token?: string
   forgot_password_token?: string
   verify_status?: EnumUserVerifyStatus
 
@@ -30,7 +30,7 @@ export default class User {
   public password: string
   public created_at: Date
   public updated_at: Date
-  public email_verified_token: string
+  public email_verify_token: string
   public forgot_password_token: string
   public verify_status: EnumUserVerifyStatus
 
@@ -51,7 +51,7 @@ export default class User {
     this.password = user.password
     this.created_at = user.created_at || date
     this.updated_at = user.updated_at || date
-    this.email_verified_token = user.email_verified_token || ''
+    this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
     this.verify_status = user.verify_status || EnumUserVerifyStatus.Unverified
 
