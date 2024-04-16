@@ -7,10 +7,11 @@ import {
   registerValidator
 } from '~/middlewares/users.middlewares'
 import {
-  emailVerifyTokenController,
   loginController,
   logoutController,
-  registerController
+  registerController,
+  resendVerifyEmailController,
+  verifyEmailController
 } from '~/controllers/users.controller'
 import { wrapRequestsHandler } from '~/utils/handlers'
 
@@ -24,7 +25,6 @@ const usersRoutes = express.Router()
  * Error: { error: string }
  *
  */
-
 usersRoutes.post('/register', registerValidator, wrapRequestsHandler(registerController))
 
 /**
@@ -46,7 +46,6 @@ usersRoutes.post('/login', loginValidator, wrapRequestsHandler(loginController))
  * Response: { message: string }
  * Error: { error: string }
  */
-
 usersRoutes.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestsHandler(logoutController))
 
 /**
@@ -58,7 +57,17 @@ usersRoutes.post('/logout', accessTokenValidator, refreshTokenValidator, wrapReq
  * Response: { message: string }
  * Error: { error: string }
  */
+usersRoutes.post('/verify-email', emailVerifyTokenValidator, wrapRequestsHandler(verifyEmailController))
 
-usersRoutes.post('/verify-email', emailVerifyTokenValidator, wrapRequestsHandler(emailVerifyTokenController))
+/**
+ * Description: Resend verify email token to user email when user clicks on the link sent to their email
+ * Path: /resend-verify-email
+ * Method: POST
+ * Header: { Authorization: Bearer <access_token>}
+ * Body: {  }
+ * Response: { message: string }
+ * Error: { error: string }
+ */
+usersRoutes.post('/resend-verify-email', accessTokenValidator, wrapRequestsHandler(resendVerifyEmailController))
 
 export default usersRoutes

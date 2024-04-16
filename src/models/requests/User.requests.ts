@@ -9,6 +9,15 @@ export interface IRegisterReqBody {
   date_of_birth: string
 }
 
+export interface ILoginReqBody {
+  email: string
+  password: string
+}
+
+export interface IVerifyEmailReqBody {
+  email_verify_token: string
+}
+
 export interface ITokenPayload extends JwtPayload {
   user_id: string
   token_type: EnumTokenType
