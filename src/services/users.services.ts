@@ -109,9 +109,10 @@ class UsersServices {
         {
           $set: {
             email_verify_token: '',
-            verify_status: EnumUserVerifyStatus.Verified,
-            updated_at: new Date()
-          }
+            verify_status: EnumUserVerifyStatus.Verified
+            // updated_at: new Date()
+          },
+          $currentDate: { updated_at: true }
         }
       )
     ])
