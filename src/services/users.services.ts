@@ -53,6 +53,19 @@ class UsersServices {
     })
   }
 
+  private signForgotPasswordToken(user_id: string) {
+    return handleSignToken({
+      payload: {
+        user_id,
+        token_type: EnumTokenType.ForgotPasswordToken
+      },
+      privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+      options: {
+        expiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN
+      }
+    })
+  }
+
   private signAccessTokenAndRefreshToken(user_id: string) {
     return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
   }
@@ -139,6 +152,22 @@ class UsersServices {
     )
     console.log('Resend verify email', email_verify_token)
     return { message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESSFULLY }
+  }
+
+  async forgotPassword(user_id: string) {
+    const forgot_password_token = await this.signForgotPasswordToken(user_id)
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      {
+        $set: {
+          forgot_password_token
+        },
+        $currentDate: { updated_at: true }
+      }
+    )
+    // Gửi email chứa link reset password có dạng: https://domain.com/reset-password?token=forgot_password_token
+    console.log('Forgot password token', forgot_password_token)
+    return { message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD }
   }
 }
 

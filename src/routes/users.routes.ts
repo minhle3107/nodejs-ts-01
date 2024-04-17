@@ -2,17 +2,19 @@ import express from 'express'
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
+  forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator
 } from '~/middlewares/users.middlewares'
 import {
+  forgotPasswordController,
   loginController,
   logoutController,
   registerController,
   resendVerifyEmailController,
   verifyEmailController
-} from '~/controllers/users.controller'
+} from '~/controllers/users.controllers'
 import { wrapRequestsHandler } from '~/utils/handlers'
 
 const usersRoutes = express.Router()
@@ -69,5 +71,13 @@ usersRoutes.post('/verify-email', emailVerifyTokenValidator, wrapRequestsHandler
  * Error: { error: string }
  */
 usersRoutes.post('/resend-verify-email', accessTokenValidator, wrapRequestsHandler(resendVerifyEmailController))
+
+/**
+ * Description: Resend verify email token to user email when user clicks on the link sent to their email
+ * Path: /forgot-password
+ * Method: POST
+ * Body: { email: string }
+ */
+usersRoutes.post('/forgot-password', forgotPasswordValidator, wrapRequestsHandler(forgotPasswordController))
 
 export default usersRoutes
