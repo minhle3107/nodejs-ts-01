@@ -6,6 +6,7 @@ import {
   ILoginReqBody,
   ILogoutReqBody,
   IRegisterReqBody,
+  IResetPasswordReqBody,
   ITokenPayload,
   IVerifyEmailReqBody,
   IVerifyForgotPasswordReqBody
@@ -120,4 +121,15 @@ export const verifyForgotPasswordController = async (
   next: NextFunction
 ) => {
   return res.json({ message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESSFULLY })
+}
+
+export const resetPasswordController = async (
+  req: Request<ParamsDictionary, any, IResetPasswordReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { user_id } = req.decoded_forgot_password_token as ITokenPayload
+  const { password } = req.body
+  const result = await usersServices.resetPassword(user_id, password)
+  return res.json({ result })
 }
