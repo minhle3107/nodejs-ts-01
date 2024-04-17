@@ -22,6 +22,10 @@ export interface IForgotPasswordReqBody {
   email: string
 }
 
+export interface IVerifyForgotPasswordReqBody {
+  forgot_password_token: string
+}
+
 export interface ITokenPayload extends JwtPayload {
   user_id: string
   token_type: EnumTokenType
