@@ -60,6 +60,8 @@ const USERS_MESSAGES = {
   VERIFY_FORGOT_PASSWORD_SUCCESSFULLY: 'Verify forgot password successfully',
   RESET_PASSWORD_SUCCESSFULLY: 'Reset password successfully',
 
-  GET_ME_SUCCESSFULLY: 'Get my profile successfully'
+  GET_ME_SUCCESSFULLY: 'Get my profile successfully',
+  USER_NOT_VERIFIED: 'User not verified',
+  UPDATE_ME_SUCCESSFULLY: 'Update my profile successfully'
 } as const
 export default USERS_MESSAGES

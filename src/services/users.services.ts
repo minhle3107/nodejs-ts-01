@@ -14,11 +14,12 @@ import USERS_MESSAGES from '~/constants/messages'
 config()
 
 class UsersServices {
-  private signAccessToken(user_id: string) {
+  private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
     return handleSignToken({
       payload: {
         user_id,
-        token_type: EnumTokenType.AccessToken
+        token_type: EnumTokenType.AccessToken,
+        verify_status
       },
       privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
       options: {
@@ -27,11 +28,12 @@ class UsersServices {
     })
   }
 
-  private signRefreshToken(user_id: string) {
+  private signRefreshToken({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
     return handleSignToken({
       payload: {
         user_id,
-        token_type: EnumTokenType.RefreshToken
+        token_type: EnumTokenType.RefreshToken,
+        verify_status
       },
       privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
       options: {
@@ -40,11 +42,12 @@ class UsersServices {
     })
   }
 
-  private signEmailVerifyToken(user_id: string) {
+  private signEmailVerifyToken({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
     return handleSignToken({
       payload: {
         user_id,
-        token_type: EnumTokenType.EmailVerifyToken
+        token_type: EnumTokenType.EmailVerifyToken,
+        verify_status
       },
       privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
       options: {
@@ -53,11 +56,18 @@ class UsersServices {
     })
   }
 
-  private signForgotPasswordToken(user_id: string) {
+  private signForgotPasswordToken({
+    user_id,
+    verify_status
+  }: {
+    user_id: string
+    verify_status: EnumUserVerifyStatus
+  }) {
     return handleSignToken({
       payload: {
         user_id,
-        token_type: EnumTokenType.ForgotPasswordToken
+        token_type: EnumTokenType.ForgotPasswordToken,
+        verify_status
       },
       privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
       options: {
@@ -66,13 +76,25 @@ class UsersServices {
     })
   }
 
-  private signAccessTokenAndRefreshToken(user_id: string) {
-    return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
+  private signAccessTokenAndRefreshToken({
+    user_id,
+    verify_status
+  }: {
+    user_id: string
+    verify_status: EnumUserVerifyStatus
+  }) {
+    return Promise.all([
+      this.signAccessToken({ user_id, verify_status }),
+      this.signRefreshToken({ user_id, verify_status })
+    ])
   }
 
   async registerUser(payload: IRegisterReqBody) {
     const user_id = new ObjectId()
-    const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
+    const email_verify_token = await this.signEmailVerifyToken({
+      user_id: user_id.toString(),
+      verify_status: EnumUserVerifyStatus.Unverified
+    })
     const user = new User({
       ...payload,
       _id: user_id,
@@ -82,7 +104,10 @@ class UsersServices {
       date_of_birth: new Date(payload.date_of_birth)
     })
     await databaseService.users.insertOne(user)
-    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id.toString())
+    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken({
+      user_id: user_id.toString(),
+      verify_status: EnumUserVerifyStatus.Unverified
+    })
     await databaseServices.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
@@ -98,8 +123,11 @@ class UsersServices {
     return Boolean(user)
   }
 
-  async login(user_id: string) {
-    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
+  async login({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
+    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken({
+      user_id,
+      verify_status
+    })
     await databaseServices.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
@@ -116,7 +144,7 @@ class UsersServices {
 
   async verifyEmail(user_id: string) {
     const [token] = await Promise.all([
-      this.signAccessTokenAndRefreshToken(user_id.toString()),
+      this.signAccessTokenAndRefreshToken({ user_id, verify_status: EnumUserVerifyStatus.Verified }),
       await databaseService.users.updateOne(
         { _id: new ObjectId(user_id) },
         {
@@ -140,7 +168,10 @@ class UsersServices {
   }
 
   async resendVerifyEmail(user_id: string) {
-    const email_verify_token = await this.signEmailVerifyToken(user_id)
+    const email_verify_token = await this.signEmailVerifyToken({
+      user_id,
+      verify_status: EnumUserVerifyStatus.Unverified
+    })
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) },
       {
@@ -154,8 +185,8 @@ class UsersServices {
     return { message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESSFULLY }
   }
 
-  async forgotPassword(user_id: string) {
-    const forgot_password_token = await this.signForgotPasswordToken(user_id)
+  async forgotPassword({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
+    const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify_status })
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) },
       {
