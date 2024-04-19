@@ -1,11 +1,11 @@
 import User from '~/models/shcemas/User.schema'
 import databaseService from '~/services/database.services'
+import databaseServices from '~/services/database.services'
 import { IRegisterReqBody } from '~/models/requests/User.requests'
 import { handleHashPassword } from '~/utils/crypto'
 import { EnumTokenType, EnumUserVerifyStatus } from '~/constants/enum'
 import { handleSignToken } from '~/utils/jwt'
 import * as process from 'process'
-import databaseServices from '~/services/database.services'
 import RefreshToken from '~/models/shcemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
 import { config } from 'dotenv'
@@ -182,6 +182,19 @@ class UsersServices {
       }
     )
     return { message: USERS_MESSAGES.RESET_PASSWORD_SUCCESSFULLY }
+  }
+
+  async getMe(user_id: string) {
+    return await databaseService.users.findOne(
+      { _id: new ObjectId(user_id) },
+      {
+        projection: {
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0
+        }
+      }
+    )
   }
 }
 
