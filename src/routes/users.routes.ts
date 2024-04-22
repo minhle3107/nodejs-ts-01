@@ -24,6 +24,8 @@ import {
   verifyForgotPasswordController
 } from '~/controllers/users.controllers'
 import { wrapRequestsHandler } from '~/utils/handlers'
+import { filterMiddlewares } from '~/middlewares/common.middlewares'
+import { IUpdateMeReqBody } from '~/models/requests/User.requests'
 
 const usersRoutes = express.Router()
 
@@ -128,6 +130,16 @@ usersRoutes.patch(
   accessTokenValidator,
   verifiedUserValidator,
   updateValidator,
+  filterMiddlewares<IUpdateMeReqBody>([
+    'name',
+    'date_of_birth',
+    'bio',
+    'location',
+    'website',
+    'username',
+    'avatar',
+    'cover_photo'
+  ]),
   wrapRequestsHandler(updateMeController)
 )
 
