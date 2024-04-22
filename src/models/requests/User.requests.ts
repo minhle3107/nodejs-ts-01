@@ -56,6 +56,10 @@ export interface IFollowReqBody {
   followed_user_id: string
 }
 
+export interface IUnfollowReqParams {
+  user_id: string
+}
+
 export interface IGetProfileReqParams {
   username: string
 }

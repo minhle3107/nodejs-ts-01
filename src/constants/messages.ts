@@ -76,7 +76,9 @@ const USERS_MESSAGES = {
   GET_PROFILE_SUCCESSFULLY: 'Get profile successfully',
   FOLLOW_USER_SUCCESSFULLY: 'Follow user successfully',
   FOLLOWED_USER_ID_IS_REQUIRED: 'Followed user id is required',
-  INVALID_FOLLOWED_USER_ID: 'Invalid followed user id',
-  FOLLOW_USER_ALREADY: 'Follow user already'
+  INVALID_USER_ID: 'Invalid user id',
+  FOLLOW_USER_ALREADY: 'Follow user already',
+  ALREADY_UNFOLLOWED_USER: 'Already unfollowed user',
+  UNFOLLOW_SUCCESSFULLY: 'Unfollow successfully'
 } as const
 export default USERS_MESSAGES

@@ -10,6 +10,7 @@ import {
   IRegisterReqBody,
   IResetPasswordReqBody,
   ITokenPayload,
+  IUnfollowReqParams,
   IUpdateMeReqBody,
   IVerifyEmailReqBody,
   IVerifyForgotPasswordReqBody
@@ -187,5 +188,16 @@ export const followController = async (
   const { user_id } = req.decoded_authorization as ITokenPayload
   const { followed_user_id } = req.body
   const user = await usersServices.followUser(user_id, followed_user_id)
+  return res.json({ result: user })
+}
+
+export const unfollowController = async (
+  req: Request<ParamsDictionary, any, IUnfollowReqParams>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { user_id } = req.decoded_authorization as ITokenPayload
+  const { user_id: followed_user_id } = req.params
+  const user = await usersServices.unfollowUser(user_id, followed_user_id)
   return res.json({ result: user })
 }

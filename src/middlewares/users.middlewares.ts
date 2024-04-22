@@ -142,6 +142,31 @@ const imageSchema: ParamSchema = {
   }
 }
 
+const userIdSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: USERS_MESSAGES.FOLLOWED_USER_ID_IS_REQUIRED
+  },
+  custom: {
+    options: async (value: string, { req }) => {
+      if (!ObjectId.isValid(value)) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.INVALID_USER_ID,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      const followed_user = await databaseService.users.findOne({ _id: new ObjectId(value) })
+      if (followed_user === null) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.USER_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      req.followed_user = followed_user
+      return true
+    }
+  }
+}
+
 export const loginValidator = validate(
   checkSchema(
     {
@@ -473,31 +498,17 @@ export const updateValidator = validate(
 export const followValidator = validate(
   checkSchema(
     {
-      followed_user_id: {
-        notEmpty: {
-          errorMessage: USERS_MESSAGES.FOLLOWED_USER_ID_IS_REQUIRED
-        },
-        custom: {
-          options: async (value: string, { req }) => {
-            if (!ObjectId.isValid(value)) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.INVALID_FOLLOWED_USER_ID,
-                status: HTTP_STATUS.NOT_FOUND
-              })
-            }
-            const followed_user = await databaseService.users.findOne({ _id: new ObjectId(value) })
-            if (followed_user === null) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.USER_NOT_FOUND,
-                status: HTTP_STATUS.NOT_FOUND
-              })
-            }
-            req.followed_user = followed_user
-            return true
-          }
-        }
-      }
+      followed_user_id: userIdSchema
     },
     ['body']
+  )
+)
+
+export const unfollowValidator = validate(
+  checkSchema(
+    {
+      user_id: userIdSchema
+    },
+    ['params']
   )
 )
