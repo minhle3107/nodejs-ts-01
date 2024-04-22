@@ -3,6 +3,7 @@ import usersServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
   IForgotPasswordReqBody,
+  IGetProfileReqParams,
   ILoginReqBody,
   ILogoutReqBody,
   IRegisterReqBody,
@@ -165,4 +166,14 @@ export const updateMeController = async (
   // ])
   const result = await usersServices.updateMe(user_id, body)
   return res.json({ message: USERS_MESSAGES.UPDATE_ME_SUCCESSFULLY, result })
+}
+
+export const getProfileController = async (
+  req: Request<ParamsDictionary, any, IGetProfileReqParams>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { username } = req.params
+  const user = await usersServices.getProfile(username)
+  return res.json({ message: USERS_MESSAGES.GET_PROFILE_SUCCESSFULLY, result: user })
 }

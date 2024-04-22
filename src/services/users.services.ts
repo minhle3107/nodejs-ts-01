@@ -248,6 +248,19 @@ class UsersServices {
       }
     )
   }
+
+  async getProfile(username: string) {
+    return await databaseService.users.findOne(
+      { username },
+      {
+        projection: {
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0
+        }
+      }
+    )
+  }
 }
 
 const usersServices = new UsersServices()

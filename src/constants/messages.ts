@@ -72,6 +72,7 @@ const USERS_MESSAGES = {
   USERNAME_MUST_BE_A_STRING: 'Username must be a string',
   USERNAME_LENGTH_MUST_BE_BETWEEN_2_AND_255: 'Username must be between 2 and 255 characters',
   IMAGE_MUST_BE_A_STRING: 'Image must be a string',
-  IMAGE_LENGTH_MUST_BE_LESS_THAN_400: 'Image must be less than 400 characters'
+  IMAGE_LENGTH_MUST_BE_LESS_THAN_400: 'Image must be less than 400 characters',
+  GET_PROFILE_SUCCESSFULLY: 'Get profile successfully'
 } as const
 export default USERS_MESSAGES

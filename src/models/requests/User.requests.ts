@@ -51,3 +51,11 @@ export interface IUpdateMeReqBody {
   avatar?: string
   cover_photo?: string
 }
+
+export interface IFollowReqBody {
+  user_id: string
+}
+
+export interface IGetProfileReqParams {
+  username: string
+}

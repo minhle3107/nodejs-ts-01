@@ -14,6 +14,7 @@ import {
 import {
   forgotPasswordController,
   getMeController,
+  getProfileController,
   loginController,
   logoutController,
   registerController,
@@ -142,5 +143,12 @@ usersRoutes.patch(
   ]),
   wrapRequestsHandler(updateMeController)
 )
+
+/**
+ * Description: Get user profile
+ * Path: /:username
+ * Method: GET
+ */
+usersRoutes.get('/:username', wrapRequestsHandler(getProfileController))
 
 export default usersRoutes
