@@ -1,7 +1,7 @@
 import User from '~/models/shcemas/User.schema'
 import databaseService from '~/services/database.services'
 import databaseServices from '~/services/database.services'
-import { IRegisterReqBody } from '~/models/requests/User.requests'
+import { IRegisterReqBody, IUpdateMeReqBody } from '~/models/requests/User.requests'
 import { handleHashPassword } from '~/utils/crypto'
 import { EnumTokenType, EnumUserVerifyStatus } from '~/constants/enum'
 import { handleSignToken } from '~/utils/jwt'
@@ -219,6 +219,27 @@ class UsersServices {
     return await databaseService.users.findOne(
       { _id: new ObjectId(user_id) },
       {
+        projection: {
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0
+        }
+      }
+    )
+  }
+
+  async updateMe(user_id: string, payload: IUpdateMeReqBody) {
+    const _payload = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
+    return await databaseService.users.findOneAndUpdate(
+      {
+        _id: new ObjectId(user_id)
+      },
+      {
+        $set: { ...(_payload as IUpdateMeReqBody & { date_of_birth?: Date }) },
+        $currentDate: { updated_at: true }
+      },
+      {
+        returnDocument: 'after',
         projection: {
           password: 0,
           email_verify_token: 0,

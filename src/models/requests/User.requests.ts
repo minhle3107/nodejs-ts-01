@@ -40,3 +40,14 @@ export interface ITokenPayload extends JwtPayload {
 export interface ILogoutReqBody {
   refresh_token: string
 }
+
+export interface IUpdateMeReqBody {
+  name?: string
+  date_of_birth?: string
+  bio?: string
+  location?: string
+  website?: string
+  username?: string
+  avatar?: string
+  cover_photo?: string
+}

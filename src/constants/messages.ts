@@ -26,7 +26,7 @@ const USERS_MESSAGES = {
     'Confirm Password must contain at least 6 characters, 1 lowercase, 1 uppercase, 1 number, and 1 symbol',
   CONFIRM_PASSWORD_DOES_NOT_MATCH: 'Passwords do not match',
 
-  DATE_OF_BIRTH_MUST_BE_A_VALID_ISO_DATE: 'Date of birth must be a valid ISODate',
+  DATE_OF_BIRTH_MUST_BE_A_VALID_ISO_DATE: 'Date of birth must be a valid ISO8601',
 
   RESIGNED_SUCCESSFULLY: 'Resigned successfully',
 
@@ -62,6 +62,16 @@ const USERS_MESSAGES = {
 
   GET_ME_SUCCESSFULLY: 'Get my profile successfully',
   USER_NOT_VERIFIED: 'User not verified',
-  UPDATE_ME_SUCCESSFULLY: 'Update my profile successfully'
+  UPDATE_ME_SUCCESSFULLY: 'Update my profile successfully',
+  BIO_MUST_BE_A_STRING: 'Bio must be a string',
+  BIO_LENGTH_MUST_BE_LESS_THAN_255: 'Bio must be between 2 and 255 characters',
+  LOCATION_MUST_BE_A_STRING: 'Location must be a string',
+  LOCATION_LENGTH_MUST_BE_LESS_THAN_255: 'Location must be less than 255 characters',
+  WEBSITE_MUST_BE_A_STRING: 'Website must be a string',
+  WEBSITE_LENGTH_MUST_BE_LESS_THAN_255: 'Website must be less than 255 characters',
+  USERNAME_MUST_BE_A_STRING: 'Username must be a string',
+  USERNAME_LENGTH_MUST_BE_BETWEEN_2_AND_255: 'Username must be between 2 and 255 characters',
+  IMAGE_MUST_BE_A_STRING: 'Image must be a string',
+  IMAGE_LENGTH_MUST_BE_LESS_THAN_400: 'Image must be less than 400 characters'
 } as const
 export default USERS_MESSAGES
