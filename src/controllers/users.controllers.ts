@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import usersServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
+  IFollowReqBody,
   IForgotPasswordReqBody,
   IGetProfileReqParams,
   ILoginReqBody,
@@ -176,4 +177,15 @@ export const getProfileController = async (
   const { username } = req.params
   const user = await usersServices.getProfile(username)
   return res.json({ message: USERS_MESSAGES.GET_PROFILE_SUCCESSFULLY, result: user })
+}
+
+export const followController = async (
+  req: Request<ParamsDictionary, any, IFollowReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { user_id } = req.decoded_authorization as ITokenPayload
+  const { followed_user_id } = req.body
+  const user = await usersServices.followUser(user_id, followed_user_id)
+  return res.json({ result: user })
 }

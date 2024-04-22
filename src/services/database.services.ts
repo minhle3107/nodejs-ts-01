@@ -3,6 +3,7 @@ import { config } from 'dotenv'
 import * as process from 'process'
 import User from '~/models/shcemas/User.schema'
 import RefreshToken from '~/models/shcemas/RefreshToken.schema'
+import Follower from '~/models/shcemas/Follower.schema'
 
 config()
 
@@ -37,15 +38,8 @@ class DatabaseService {
     return this.db.collection(process.env.DB_REFRESH_TOKENS_COLLECTION as string)
   }
 
-  async disconnect() {
-    try {
-      await this.client.close()
-      console.log('Disconnected from MongoDB!')
-    } catch (e) {
-      console.error('Unable to disconnect from MongoDB')
-      console.error(e)
-      throw e
-    }
+  get followers(): Collection<Follower> {
+    return this.db.collection(process.env.DB_FOLLOWERS_COLLECTION as string)
   }
 }
 
