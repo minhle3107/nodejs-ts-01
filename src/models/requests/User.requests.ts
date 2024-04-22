@@ -63,3 +63,9 @@ export interface IUnfollowReqParams {
 export interface IGetProfileReqParams {
   username: string
 }
+
+export interface IChangePasswordReqBody {
+  old_password: string
+  password: string
+  confirm_password: string
+}
