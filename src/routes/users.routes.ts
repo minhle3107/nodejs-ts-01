@@ -22,6 +22,7 @@ import {
   getProfileController,
   loginController,
   logoutController,
+  oauthGoogleController,
   registerController,
   resendVerifyEmailController,
   resetPasswordController,
@@ -55,6 +56,15 @@ usersRoutes.post('/register', registerValidator, wrapRequestsHandler(registerCon
  *
  */
 usersRoutes.post('/login', loginValidator, wrapRequestsHandler(loginController))
+
+/**
+ * Description: Login with Google OAuth 2.0
+ * Route: /oauth/google
+ * Method: GET
+ * Query: { code: string }
+ *
+ */
+usersRoutes.get('/oauth/google', wrapRequestsHandler(oauthGoogleController))
 
 /**
  * Description: Logout
