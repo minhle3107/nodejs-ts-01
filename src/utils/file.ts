@@ -1,24 +1,25 @@
 import { existsSync, mkdirSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { Request } from 'express'
-import path from 'node:path'
+import { File } from 'formidable'
+import { UPLOADS_IMAGES_DIR, UPLOADS_TEMPS_DIR } from '~/constants/dir'
 
 export const initFolder = () => {
-  const uploadsFolderPath = resolve('uploads')
-  if (!existsSync(uploadsFolderPath)) {
-    mkdirSync(uploadsFolderPath, { recursive: true })
-  }
+  ;[UPLOADS_TEMPS_DIR, UPLOADS_IMAGES_DIR].forEach((dir) => {
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true })
+    }
+  })
 }
 
 export const handleUploadSingleImage = async (req: Request) => {
   // Cách fix ESModule trong CommonJS
   const formidable = (await import('formidable')).default
   const form = formidable({
-    uploadDir: path.resolve('uploads'),
+    uploadDir: UPLOADS_TEMPS_DIR,
     maxFiles: 1,
     keepExtensions: true,
-    maxFileSize: 500 * 1024, // 500KB
-    filter: function ({ name, originalFilename, mimetype }) {
+    maxFileSize: 5000 * 1024, // 5MB
+    filter: ({ name, originalFilename, mimetype }) => {
       const valid = name === 'image' && Boolean(mimetype?.includes('image'))
       // keep only images
       if (!valid) {
@@ -28,7 +29,7 @@ export const handleUploadSingleImage = async (req: Request) => {
     }
   })
 
-  return new Promise((resolve, reject) => {
+  return new Promise<File>((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
       if (err) {
         return reject(err)
@@ -37,7 +38,11 @@ export const handleUploadSingleImage = async (req: Request) => {
       if (!Boolean(files.image)) {
         return reject(new Error('No image uploaded'))
       }
-      resolve(files)
+      resolve((files.image as File[])[0])
     })
   })
+}
+
+export const getNameFromFullName = (fullName: string) => {
+  return fullName.slice(0, fullName.lastIndexOf('.'))
 }
