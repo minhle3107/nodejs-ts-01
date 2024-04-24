@@ -1,6 +1,21 @@
-type Handle = () => Promise<string>
-const fullName: string = 'Lê Minh'
-// console.log(fullName)
-const handle: Handle = async () => Promise.resolve(fullName)
+import express from 'express'
+import { config } from 'dotenv'
+import databaseService from '~/services/database.services'
+import { defaultErrorHandler } from '~/middlewares/error.middlewares'
+import usersRoutes from '~/routes/users.routes'
+import mediasRoutes from '~/routes/medias.routes'
+import { initFolder } from '~/utils/file'
 
-handle().then(console.log)
+config()
+databaseService.connect()
+const app = express()
+const port = process.env.PORT
+
+initFolder()
+
+app.use(express.json())
+app.use('/users', usersRoutes)
+app.use('/medias', mediasRoutes)
+app.use(defaultErrorHandler)
+
+app.listen(port, () => console.log(`App listening on port ${port}`))
