@@ -194,6 +194,8 @@ class UsersServices {
     }
     // Kiểm tra email đã được đăng ký chưa
     const user = await databaseService.users.findOne({ email: userInfo.email })
+    const newUserTrue = 1
+    const newUserFalse = 0
     // Nếu tồn tại cho login vào
     if (user) {
       const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken({
@@ -204,7 +206,7 @@ class UsersServices {
       return {
         access_token,
         refresh_token,
-        newUser: process.env.NEW_USER_FALSE,
+        newUser: newUserFalse,
         verify_status: user.verify_status
       }
     } else {
@@ -218,7 +220,7 @@ class UsersServices {
       })
       return {
         ...data,
-        newUser: process.env.NEW_USER_TRUE,
+        newUser: newUserTrue,
         verify_status: EnumUserVerifyStatus.Unverified
       }
     }
