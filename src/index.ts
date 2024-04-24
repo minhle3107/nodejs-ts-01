@@ -5,12 +5,13 @@ import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import usersRoutes from '~/routes/users.routes'
 import mediasRoutes from '~/routes/medias.routes'
 import { initFolder } from '~/utils/file'
+import * as process from 'node:process'
 
 config()
 databaseService.connect()
 const app = express()
-const port = process.env.PORT
-
+const port = process.env.PORT || 4000
+// console.log(options.development)
 initFolder()
 
 app.use(express.json())
