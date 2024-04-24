@@ -11,14 +11,15 @@ export const initFolder = () => {
   })
 }
 
-export const handleUploadSingleImage = async (req: Request) => {
+export const handleUploadImage = async (req: Request) => {
   // Cách fix ESModule trong CommonJS
   const formidable = (await import('formidable')).default
   const form = formidable({
     uploadDir: UPLOADS_TEMPS_DIR,
-    maxFiles: 1,
+    maxFiles: 6,
     keepExtensions: true,
-    maxFileSize: 5000 * 1024, // 5MB
+    maxFileSize: 5000 * 1024, // 500KB
+    maxTotalFileSize: 5000 * 1024 * 6, // 500KB * 6
     filter: ({ name, originalFilename, mimetype }) => {
       const valid = name === 'image' && Boolean(mimetype?.includes('image'))
       // keep only images
@@ -29,7 +30,7 @@ export const handleUploadSingleImage = async (req: Request) => {
     }
   })
 
-  return new Promise<File>((resolve, reject) => {
+  return new Promise<File[]>((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
       if (err) {
         return reject(err)
@@ -38,7 +39,7 @@ export const handleUploadSingleImage = async (req: Request) => {
       if (!Boolean(files.image)) {
         return reject(new Error('No image uploaded'))
       }
-      resolve((files.image as File[])[0])
+      resolve(files.image as File[])
     })
   })
 }

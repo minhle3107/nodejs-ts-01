@@ -6,7 +6,6 @@ import usersRoutes from '~/routes/users.routes'
 import mediasRoutes from '~/routes/medias.routes'
 import { initFolder } from '~/utils/file'
 import * as process from 'node:process'
-import { UPLOADS_IMAGES_DIR } from '~/constants/dir'
 import staticRoutes from '~/routes/static.routes'
 
 config()
