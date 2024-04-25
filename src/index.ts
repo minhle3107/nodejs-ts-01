@@ -4,7 +4,7 @@ import databaseService from '~/services/database.services'
 import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import usersRoutes from '~/routes/users.routes'
 import mediasRoutes from '~/routes/medias.routes'
-import { initFolder } from '~/utils/file'
+import { getExtensionFromFullName, initFolder } from '~/utils/file'
 import * as process from 'node:process'
 import staticRoutes from '~/routes/static.routes'
 
@@ -14,7 +14,6 @@ const app = express()
 const port = process.env.PORT || 4000
 
 initFolder()
-
 app.use(express.json())
 app.use('/users', usersRoutes)
 app.use('/medias', mediasRoutes)

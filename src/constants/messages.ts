@@ -86,6 +86,7 @@ const USERS_MESSAGES = {
   CHANGE_PASSWORD_SUCCESSFULLY: 'Change password successfully',
   GMAIL_NOT_VERIFIED: 'Gmail not verified',
   UPLOAD_IMAGE_SUCCESS: 'Upload image successfully',
-  IMAGE_NOT_FOUND: 'Image not found'
+  IMAGE_NOT_FOUND: 'Image not found',
+  VIDEO_NOT_FOUND: 'Video not found'
 } as const
 export default USERS_MESSAGES
