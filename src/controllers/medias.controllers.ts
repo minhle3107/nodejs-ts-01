@@ -41,8 +41,8 @@ export const serveVideoStreamVideoController = async (req: Request, res: Respons
   const videoSize = fs.statSync(pathVideo).size
   const CHUNK_SIZE = 10 ** 6 // 1MB
   const start = Number(range.replace(/\D/g, ''))
-  const end = Math.min(start + CHUNK_SIZE, videoSize)
-  const contentLength = end - start
+  const end = Math.min(start + CHUNK_SIZE, videoSize - 1)
+  const contentLength = end - start + 1
 
   const mime = (await import('mime')).default
   const contentType = mime.getType(pathVideo) || 'video/*'
