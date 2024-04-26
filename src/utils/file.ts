@@ -8,6 +8,7 @@ import {
   UPLOADS_VIDEOS_TEMPS_DIR
 } from '~/constants/dir'
 import fs from 'fs'
+import USERS_MESSAGES from '~/constants/messages'
 
 export const initFolder = () => {
   ;[UPLOADS_IMAGES_TEMPS_DIR, UPLOADS_VIDEOS_TEMPS_DIR].forEach((dir) => {
@@ -44,7 +45,7 @@ export const handleUploadImage = async (req: Request) => {
       }
       // eslint-disable-next-line no-extra-boolean-cast
       if (!Boolean(files.image)) {
-        return reject(new Error('No image uploaded'))
+        return reject(new Error(USERS_MESSAGES.NO_IMAGE_UPLOADED))
       }
       resolve(files.image as File[])
     })
@@ -59,13 +60,11 @@ export const handleUploadVideo = async (req: Request) => {
     maxFiles: 1,
     maxFileSize: 500 * 1024 * 1024, // 500MB
     filter: ({ name, originalFilename, mimetype }) => {
-      // const valid = name === 'image' && Boolean(mimetype?.includes('image'))
-      // // keep only images
-      // if (!valid) {
-      //   form.emit('error' as any, new Error('Invalid file type') as any)
-      // }
-      // return valid
-      return true
+      const valid = name === 'video' && Boolean(mimetype?.includes('mp4') || mimetype?.includes('quicktime'))
+      if (!valid) {
+        form.emit('error' as any, new Error(USERS_MESSAGES.VIDEO_MUST_MP4_OR_MOV) as any)
+      }
+      return valid
     }
   })
 
@@ -76,7 +75,7 @@ export const handleUploadVideo = async (req: Request) => {
       }
       // eslint-disable-next-line no-extra-boolean-cast
       if (!Boolean(files.video)) {
-        return reject(new Error('No video uploaded'))
+        return reject(new Error(USERS_MESSAGES.NO_VIDEO_UPLOADED))
       }
 
       const videos = files.video as File[]

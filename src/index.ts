@@ -7,6 +7,7 @@ import mediasRoutes from '~/routes/medias.routes'
 import { getExtensionFromFullName, initFolder } from '~/utils/file'
 import * as process from 'node:process'
 import staticRoutes from '~/routes/static.routes'
+import { UPLOADS_VIDEOS_DIR } from '~/constants/dir'
 
 config()
 databaseService.connect()
@@ -18,7 +19,7 @@ app.use(express.json())
 app.use('/users', usersRoutes)
 app.use('/medias', mediasRoutes)
 app.use('/static', staticRoutes)
-// app.use('/static', express.static(UPLOADS_IMAGES_DIR))
+app.use('/static/video', express.static(UPLOADS_VIDEOS_DIR))
 app.use(defaultErrorHandler)
 
 app.listen(port, () => console.log(`App listening on port ${port}`))

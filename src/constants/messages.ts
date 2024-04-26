@@ -86,7 +86,12 @@ const USERS_MESSAGES = {
   CHANGE_PASSWORD_SUCCESSFULLY: 'Change password successfully',
   GMAIL_NOT_VERIFIED: 'Gmail not verified',
   UPLOAD_IMAGE_SUCCESS: 'Upload image successfully',
+  NO_IMAGE_UPLOADED: 'No image uploaded',
   IMAGE_NOT_FOUND: 'Image not found',
-  VIDEO_NOT_FOUND: 'Video not found'
+  VIDEO_NOT_FOUND: 'Video not found',
+  NO_VIDEO_UPLOADED: 'No video uploaded',
+  UPLOAD_VIDEO_SUCCESS: 'Upload video successfully',
+  VIDEO_MUST_MP4_OR_MOV: 'Video must be in mp4 or mov format',
+  INVALID_RANGE: 'Invalid range'
 } as const
 export default USERS_MESSAGES

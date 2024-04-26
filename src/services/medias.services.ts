@@ -38,8 +38,8 @@ class MediasService {
     const result: IMedia[] = files.map((file) => {
       return {
         url: isProduction
-          ? `${process.env.HOST}/static/video/${file.newFilename}`
-          : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`,
+          ? `${process.env.HOST}/static/video-stream/${file.newFilename}`
+          : `http://localhost:${process.env.PORT}/static/video-stream/${file.newFilename}`,
         type: EnumMediaType.Video
       }
     })
