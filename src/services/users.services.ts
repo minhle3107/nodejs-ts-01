@@ -231,6 +231,32 @@ class UsersServices {
     return { message: USERS_MESSAGES.LOGOUT_SUCCESSFULLY }
   }
 
+  async refreshToken({
+    user_id,
+    verify_status,
+    refresh_token
+  }: {
+    user_id: string
+    verify_status: EnumUserVerifyStatus
+    refresh_token: string
+  }) {
+    const [new_access_token, new_refresh_token] = await Promise.all([
+      this.signAccessToken({ user_id, verify_status }),
+      this.signRefreshToken({ user_id, verify_status }),
+      databaseService.refreshTokens.deleteOne({ token: refresh_token })
+    ])
+    await databaseServices.refreshTokens.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: new_refresh_token
+      })
+    )
+    return {
+      access_token: new_access_token,
+      refresh_token: new_refresh_token
+    }
+  }
+
   async verifyEmail(user_id: string) {
     const [token] = await Promise.all([
       this.signAccessTokenAndRefreshToken({ user_id, verify_status: EnumUserVerifyStatus.Verified }),

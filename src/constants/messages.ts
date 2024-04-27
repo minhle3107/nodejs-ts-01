@@ -92,6 +92,7 @@ const USERS_MESSAGES = {
   NO_VIDEO_UPLOADED: 'No video uploaded',
   UPLOAD_VIDEO_SUCCESS: 'Upload video successfully',
   VIDEO_MUST_MP4_OR_MOV: 'Video must be in mp4 or mov format',
-  INVALID_RANGE: 'Invalid range'
+  INVALID_RANGE: 'Invalid range',
+  REFRESH_TOKEN_SUCCESSFULLY: 'Refresh token successfully'
 } as const
 export default USERS_MESSAGES

@@ -19,7 +19,7 @@ app.use(express.json())
 app.use('/users', usersRoutes)
 app.use('/medias', mediasRoutes)
 app.use('/static', staticRoutes)
-app.use('/static/video', express.static(UPLOADS_VIDEOS_DIR))
+// app.use('/static/video', express.static(UPLOADS_VIDEOS_DIR))
 app.use(defaultErrorHandler)
 
 app.listen(port, () => console.log(`App listening on port ${port}`))
