@@ -4,14 +4,15 @@ import databaseService from '~/services/database.services'
 import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import usersRoutes from '~/routes/users.routes'
 import mediasRoutes from '~/routes/medias.routes'
-import { getExtensionFromFullName, getNameFromFullName, initFolder } from '~/utils/file'
+import { initFolder } from '~/utils/file'
 import * as process from 'node:process'
 import staticRoutes from '~/routes/static.routes'
-import { UPLOADS_VIDEOS_DIR } from '~/constants/dir'
+import cors from 'cors'
 
 config()
 databaseService.connect()
 const app = express()
+app.use(cors())
 const port = process.env.PORT || 4000
 
 initFolder()

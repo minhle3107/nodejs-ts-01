@@ -67,3 +67,21 @@ export const serveVideoStreamVideoController = async (req: Request, res: Respons
   const videoStream = fs.createReadStream(pathVideo, { start, end })
   videoStream.pipe(res)
 }
+
+export const serveM3U8Controller = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, 'master.m3u8'), (err) => {
+    if (err) {
+      res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
+    }
+  })
+}
+
+export const serveSegmentController = async (req: Request, res: Response, next: NextFunction) => {
+  const { id, v, segment } = req.params
+  return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, v, segment), (err) => {
+    if (err) {
+      res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
+    }
+  })
+}

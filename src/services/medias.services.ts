@@ -57,8 +57,8 @@ class MediasService {
         await fsPromises.unlink(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/static/video-stream-hls/${folderVideo}`
-            : `http://localhost:${process.env.PORT}/static/video-stream-hls/${folderVideo}`,
+            ? `${process.env.HOST}/static/video-hls/${folderVideo}/master.m3u8`
+            : `http://localhost:${process.env.PORT}/static/video-hls/${folderVideo}/master.m3u8`,
           type: EnumMediaType.HLS
         }
       })
