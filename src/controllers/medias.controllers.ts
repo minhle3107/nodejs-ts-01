@@ -5,6 +5,7 @@ import { UPLOADS_IMAGES_DIR, UPLOADS_VIDEOS_DIR, UPLOADS_VIDEOS_TEMPS_DIR } from
 import path from 'node:path'
 import httpStatus from '~/constants/httpStatus'
 import fs from 'fs'
+import { getNameFromFullName } from '~/utils/file'
 
 export const uploadImageController = async (req: Request, res: Response, next: NextFunction) => {
   const urlImage = await mediasService.handleUploadImage(req)
@@ -31,13 +32,23 @@ export const uploadVideoController = async (req: Request, res: Response, next: N
   })
 }
 
+export const uploadVideoHLSController = async (req: Request, res: Response, next: NextFunction) => {
+  const urlVideo = await mediasService.handleUploadVideoHLS(req)
+  return res.json({
+    message: USERS_MESSAGES.UPLOAD_VIDEO_SUCCESS,
+    result: urlVideo
+  })
+}
+
 export const serveVideoStreamVideoController = async (req: Request, res: Response, next: NextFunction) => {
   const range = req.headers.range
   if (!range) {
     return res.status(httpStatus.BAD_REQUEST).send(USERS_MESSAGES.INVALID_RANGE)
   }
   const { name } = req.params
-  const pathVideo = path.resolve(UPLOADS_VIDEOS_DIR, name)
+  const folderVideo = getNameFromFullName(name)
+  const pathVideo = path.resolve(`${UPLOADS_VIDEOS_DIR}/${folderVideo}`, name)
+
   const videoSize = fs.statSync(pathVideo).size
   const CHUNK_SIZE = 10 ** 6 // 1MB
   const start = Number(range.replace(/\D/g, ''))

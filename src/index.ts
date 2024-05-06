@@ -4,7 +4,7 @@ import databaseService from '~/services/database.services'
 import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import usersRoutes from '~/routes/users.routes'
 import mediasRoutes from '~/routes/medias.routes'
-import { getExtensionFromFullName, initFolder } from '~/utils/file'
+import { getExtensionFromFullName, getNameFromFullName, initFolder } from '~/utils/file'
 import * as process from 'node:process'
 import staticRoutes from '~/routes/static.routes'
 import { UPLOADS_VIDEOS_DIR } from '~/constants/dir'
@@ -21,5 +21,21 @@ app.use('/medias', mediasRoutes)
 app.use('/static', staticRoutes)
 // app.use('/static/video', express.static(UPLOADS_VIDEOS_DIR))
 app.use(defaultErrorHandler)
-
 app.listen(port, () => console.log(`App listening on port ${port}`))
+
+/**
+ *
+ *
+ * __       __  __            __        __                   ______     __    ______   ________
+ * |  \     /  \|  \          |  \      |  \                 /      \  _/  \  /      \ |        \
+ * | $$\   /  $$ \$$ _______  | $$____  | $$  ______        |  $$$$$$\|   $$ |  $$$$$$\ \$$$$$$$$
+ * | $$$\ /  $$$|  \|       \ | $$    \ | $$ /      \        \$$__| $$ \$$$$ | $$$\| $$    /  $$
+ * | $$$$\  $$$$| $$| $$$$$$$\| $$$$$$$\| $$|  $$$$$$\        |     $$  | $$ | $$$$\ $$   /  $$
+ * | $$\$$ $$ $$| $$| $$  | $$| $$  | $$| $$| $$    $$       __\$$$$$\  | $$ | $$\$$\$$  /  $$
+ * | $$ \$$$| $$| $$| $$  | $$| $$  | $$| $$| $$$$$$$$      |  \__| $$ _| $$_| $$_\$$$$ /  $$
+ * | $$  \$ | $$| $$| $$  | $$| $$  | $$| $$ \$$     \ ______\$$    $$|   $$ \\$$  \$$$|  $$
+ *  \$$      \$$ \$$ \$$   \$$ \$$   \$$ \$$  \$$$$$$$|      \\$$$$$$  \$$$$$$ \$$$$$$  \$$
+ *                                                     \$$$$$$
+ *
+ *
+ */

@@ -9,6 +9,7 @@ import {
 } from '~/constants/dir'
 import fs from 'fs'
 import USERS_MESSAGES from '~/constants/messages'
+import path from 'node:path'
 
 export const initFolder = () => {
   ;[UPLOADS_IMAGES_TEMPS_DIR, UPLOADS_VIDEOS_TEMPS_DIR].forEach((dir) => {
@@ -55,8 +56,12 @@ export const handleUploadImage = async (req: Request) => {
 export const handleUploadVideo = async (req: Request) => {
   // Cách fix ESModule trong CommonJS
   const formidable = (await import('formidable')).default
+  const nanoid = (await import('nanoid')).nanoid
+  const idName = nanoid()
+  const folderPath = path.resolve(UPLOADS_VIDEOS_DIR, idName)
+  fs.mkdirSync(folderPath)
   const form = formidable({
-    uploadDir: UPLOADS_VIDEOS_DIR,
+    uploadDir: folderPath,
     maxFiles: 1,
     maxFileSize: 500 * 1024 * 1024, // 500MB
     filter: ({ name, originalFilename, mimetype }) => {
@@ -65,6 +70,9 @@ export const handleUploadVideo = async (req: Request) => {
         form.emit('error' as any, new Error(USERS_MESSAGES.VIDEO_MUST_MP4_OR_MOV) as any)
       }
       return valid
+    },
+    filename: () => {
+      return idName
     }
   })
 
@@ -83,6 +91,51 @@ export const handleUploadVideo = async (req: Request) => {
         const ext = getExtensionFromFullName(video.originalFilename as string)
         fs.renameSync(video.filepath, `${video.filepath}${ext}`)
         video.newFilename = `${video.newFilename}${ext}`
+        video.filepath = `${video.filepath}${ext}`
+      })
+      resolve(files.video as File[])
+    })
+  })
+}
+
+export const handleUploadVideoHLS = async (req: Request) => {
+  const formidable = (await import('formidable')).default
+  const nanoid = (await import('nanoid')).nanoid
+  const idName = nanoid()
+  const folderPath = path.resolve(UPLOADS_VIDEOS_DIR, idName)
+  fs.mkdirSync(folderPath)
+  const form = formidable({
+    uploadDir: folderPath,
+    maxFiles: 1,
+    maxFileSize: 500 * 1024 * 1024, // 500MB
+    filter: ({ name, originalFilename, mimetype }) => {
+      const valid = name === 'video' && Boolean(mimetype?.includes('mp4') || mimetype?.includes('quicktime'))
+      if (!valid) {
+        form.emit('error' as any, new Error(USERS_MESSAGES.VIDEO_MUST_MP4_OR_MOV) as any)
+      }
+      return valid
+    },
+    filename: () => {
+      return idName
+    }
+  })
+
+  return new Promise<File[]>((resolve, reject) => {
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        return reject(err)
+      }
+      // eslint-disable-next-line no-extra-boolean-cast
+      if (!Boolean(files.video)) {
+        return reject(new Error(USERS_MESSAGES.NO_VIDEO_UPLOADED))
+      }
+
+      const videos = files.video as File[]
+      videos.forEach((video) => {
+        const ext = getExtensionFromFullName(video.originalFilename as string)
+        fs.renameSync(video.filepath, `${video.filepath}${ext}`)
+        video.newFilename = `${video.newFilename}${ext}`
+        video.filepath = `${video.filepath}${ext}`
       })
       resolve(files.video as File[])
     })
