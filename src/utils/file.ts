@@ -40,7 +40,6 @@ export const handleUploadImage = async (req: Request) => {
 
   return new Promise<File[]>((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
-      console.log('files', files)
       if (err) {
         return reject(err)
       }
