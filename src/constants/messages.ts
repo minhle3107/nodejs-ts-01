@@ -93,6 +93,7 @@ const USERS_MESSAGES = {
   UPLOAD_VIDEO_SUCCESS: 'Upload video successfully',
   VIDEO_MUST_MP4_OR_MOV: 'Video must be in mp4 or mov format',
   INVALID_RANGE: 'Invalid range',
-  REFRESH_TOKEN_SUCCESSFULLY: 'Refresh token successfully'
+  REFRESH_TOKEN_SUCCESSFULLY: 'Refresh token successfully',
+  GET_VIDEO_STATUS_SUCCESSFULLY: 'Get video status successfully'
 } as const
 export default USERS_MESSAGES

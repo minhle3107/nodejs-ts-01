@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { EnumUserVerifyStatus } from '~/constants/enum'
+import { EnumUserVerifyStatus } from '~/constants/enums'
 
 interface IUserType {
   _id?: ObjectId

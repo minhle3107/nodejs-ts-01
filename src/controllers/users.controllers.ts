@@ -22,7 +22,7 @@ import User from '~/models/shcemas/User.schema'
 import USERS_MESSAGES from '~/constants/messages'
 import databaseService from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
-import { EnumUserVerifyStatus } from '~/constants/enum'
+import { EnumUserVerifyStatus } from '~/constants/enums'
 import { pick } from 'lodash'
 import * as process from 'node:process'
 

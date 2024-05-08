@@ -4,6 +4,7 @@ import * as process from 'process'
 import User from '~/models/shcemas/User.schema'
 import RefreshToken from '~/models/shcemas/RefreshToken.schema'
 import Follower from '~/models/shcemas/Follower.schema'
+import VideoStatus from '~/models/shcemas/VideoStatus.schema'
 
 config()
 
@@ -40,6 +41,10 @@ class DatabaseService {
 
   get followers(): Collection<Follower> {
     return this.db.collection(process.env.DB_FOLLOWERS_COLLECTION as string)
+  }
+
+  get videoStatus(): Collection<VideoStatus> {
+    return this.db.collection(process.env.DB_VIDEO_STATUS_COLLECTION as string)
   }
 }
 

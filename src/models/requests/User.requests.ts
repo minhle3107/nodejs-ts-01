@@ -1,5 +1,5 @@
 import { JwtPayload } from 'jsonwebtoken'
-import { EnumTokenType, EnumUserVerifyStatus } from '~/constants/enum'
+import { EnumTokenType, EnumUserVerifyStatus } from '~/constants/enums'
 
 export interface IRegisterReqBody {
   name: string

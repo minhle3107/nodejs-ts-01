@@ -8,9 +8,11 @@ import fsPromises from 'fs/promises'
 import { config } from 'dotenv'
 import { isProduction } from '~/constants/config'
 import * as process from 'node:process'
-import { EnumMediaType } from '~/constants/enum'
+import { EnumEncodingStatus, EnumMediaType } from '~/constants/enums'
 import { IMedia } from '~/models/Other'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
+import databaseService from '~/services/database.services'
+import VideoStatus from '~/models/shcemas/VideoStatus.schema'
 
 config()
 
@@ -23,8 +25,17 @@ class Queue {
     this.encoding = false
   }
 
-  enqueue(item: string) {
+  async enqueue(item: string) {
     this.items.push(item)
+    // item = /Users/hoangpham/Downloads/IMG_0001.MOV
+    const idName = getNameFromFullName(item.split('/').pop() as string)
+    console.log(idName)
+    await databaseService.videoStatus.insertOne(
+      new VideoStatus({
+        name: idName,
+        status: EnumEncodingStatus.Pending
+      })
+    )
     this.processEncode()
   }
 
@@ -33,12 +44,44 @@ class Queue {
     if (this.items.length > 0) {
       this.encoding = true
       const videoPath = this.items[0]
+      const idName = getNameFromFullName(videoPath.split('/').pop() as string)
+      await databaseService.videoStatus.updateOne(
+        { name: idName },
+        {
+          $set: {
+            status: EnumEncodingStatus.Processing
+          },
+          $currentDate: { updated_at: true }
+        }
+      )
       try {
         await encodeHLSWithMultipleVideoStreams(videoPath)
         this.items.shift()
         await fsPromises.unlink(videoPath)
+        await databaseService.videoStatus.updateOne(
+          { name: idName },
+          {
+            $set: {
+              status: EnumEncodingStatus.Completed
+            },
+            $currentDate: { updated_at: true }
+          }
+        )
         console.log(`Encode video ${videoPath} success`)
       } catch (error) {
+        await databaseService.videoStatus
+          .updateOne(
+            { name: idName },
+            {
+              $set: {
+                status: EnumEncodingStatus.Failed
+              },
+              $currentDate: { updated_at: true }
+            }
+          )
+          .catch((e) => {
+            console.error('Update status failed', e)
+          })
         console.error(`Encode video ${videoPath} failed`)
         console.error(error)
       }
@@ -91,7 +134,7 @@ class MediasService {
     const result: IMedia[] = await Promise.all(
       files.map(async (file) => {
         const folderVideo = getNameFromFullName(file.newFilename)
-        queue.enqueue(file.filepath)
+        await queue.enqueue(file.filepath)
         return {
           url: isProduction
             ? `${process.env.HOST}/static/video-hls/${folderVideo}/master.m3u8`
@@ -102,6 +145,17 @@ class MediasService {
     )
 
     return result
+  }
+
+  async getVideoStatus(id: string) {
+    const data = await databaseService.videoStatus.findOne({ name: id })
+    if (!data) {
+      return {
+        status: EnumEncodingStatus.NotFound
+      }
+    }
+
+    return data
   }
 }
 
