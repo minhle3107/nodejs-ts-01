@@ -84,6 +84,16 @@ const USERS_MESSAGES = {
   UNFOLLOW_SUCCESSFULLY: 'Unfollow successfully',
   OLD_PASSWORD_IS_INCORRECT: 'Old password is incorrect',
   CHANGE_PASSWORD_SUCCESSFULLY: 'Change password successfully',
-  GMAIL_NOT_VERIFIED: 'Gmail not verified'
+  GMAIL_NOT_VERIFIED: 'Gmail not verified',
+  UPLOAD_IMAGE_SUCCESS: 'Upload image successfully',
+  NO_IMAGE_UPLOADED: 'No image uploaded',
+  IMAGE_NOT_FOUND: 'Image not found',
+  VIDEO_NOT_FOUND: 'Video not found',
+  NO_VIDEO_UPLOADED: 'No video uploaded',
+  UPLOAD_VIDEO_SUCCESS: 'Upload video successfully',
+  VIDEO_MUST_MP4_OR_MOV: 'Video must be in mp4 or mov format',
+  INVALID_RANGE: 'Invalid range',
+  REFRESH_TOKEN_SUCCESSFULLY: 'Refresh token successfully',
+  GET_VIDEO_STATUS_SUCCESSFULLY: 'Get video status successfully'
 } as const
 export default USERS_MESSAGES

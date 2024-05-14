@@ -1,5 +1,5 @@
 import { JwtPayload } from 'jsonwebtoken'
-import { EnumTokenType } from '~/constants/enum'
+import { EnumTokenType, EnumUserVerifyStatus } from '~/constants/enums'
 
 export interface IRegisterReqBody {
   name: string
@@ -35,9 +35,14 @@ export interface IResetPasswordReqBody {
 export interface ITokenPayload extends JwtPayload {
   user_id: string
   token_type: EnumTokenType
+  verify_status: EnumUserVerifyStatus
 }
 
 export interface ILogoutReqBody {
+  refresh_token: string
+}
+
+export interface IRefreshTokenReqBody {
   refresh_token: string
 }
 

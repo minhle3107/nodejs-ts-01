@@ -12,7 +12,7 @@ import { JsonWebTokenError } from 'jsonwebtoken'
 import { capitalize } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { ITokenPayload } from '~/models/requests/User.requests'
-import { EnumUserVerifyStatus } from '~/constants/enum'
+import { EnumUserVerifyStatus } from '~/constants/enums'
 import { REGEX_USERNAME } from '~/constants/regex'
 
 const passwordSchema: ParamSchema = {
