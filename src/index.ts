@@ -8,11 +8,13 @@ import { initFolder } from '~/utils/file'
 import * as process from 'node:process'
 import staticRoutes from '~/routes/static.routes'
 import cors from 'cors'
-import { MongoClient } from 'mongodb'
 
 config()
 databaseService.connect().then(() => {
   databaseService.indexUsers()
+  databaseService.indexRefreshTokens()
+  databaseService.indexVideoStatus()
+  databaseService.indexFollowers()
 })
 const app = express()
 app.use(cors())
