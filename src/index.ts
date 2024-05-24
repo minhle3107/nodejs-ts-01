@@ -11,7 +11,9 @@ import cors from 'cors'
 import { MongoClient } from 'mongodb'
 
 config()
-databaseService.connect()
+databaseService.connect().then(() => {
+  databaseService.indexUsers()
+})
 const app = express()
 app.use(cors())
 const port = process.env.PORT || 4000

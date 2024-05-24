@@ -36,6 +36,8 @@ export interface ITokenPayload extends JwtPayload {
   user_id: string
   token_type: EnumTokenType
   verify_status: EnumUserVerifyStatus
+  iat: number
+  exp: number
 }
 
 export interface ILogoutReqBody {
