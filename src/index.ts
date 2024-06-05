@@ -45,26 +45,3 @@ app.listen(port, () => console.log(`App listening on port ${port}`))
  *
  *
  */
-
-// const mgclient = new MongoClient(
-//   `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@twitter.rifbmvv.mongodb.net/?retryWrites=true&w=majority&appName=Twitter`
-// )
-//
-// const db = mgclient.db('earth')
-// // Tạo 1000 document trong collection 'users'
-// const users = db.collection('users')
-// const usersData = []
-//
-// function getRandomNumber() {
-//   return Math.floor(Math.random() * 100) + 1
-// }
-//
-// for (let i = 0; i < 1000; i++) {
-//   usersData.push({
-//     name: `user${i + 1}`,
-//     age: getRandomNumber(),
-//     sex: i % 2 === 0 ? 'male' : 'female'
-//   })
-// }
-//
-// users.insertMany(usersData)
