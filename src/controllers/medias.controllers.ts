@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import mediasService from '~/services/medias.services'
 import USERS_MESSAGES from '~/constants/messages'
-import { UPLOADS_IMAGES_DIR, UPLOADS_VIDEOS_DIR, UPLOADS_VIDEOS_TEMPS_DIR } from '~/constants/dir'
+import { UPLOADS_IMAGES_DIR, UPLOADS_VIDEOS_DIR } from '~/constants/dir'
 import path from 'node:path'
 import httpStatus from '~/constants/httpStatus'
 import fs from 'fs'
 import { getNameFromFullName } from '~/utils/file'
 
-export const uploadImageController = async (req: Request, res: Response, next: NextFunction) => {
+export const uploadImageController = async (req: Request, res: Response) => {
   const urlImage = await mediasService.handleUploadImage(req)
   return res.json({
     message: USERS_MESSAGES.UPLOAD_IMAGE_SUCCESS,
@@ -15,7 +15,7 @@ export const uploadImageController = async (req: Request, res: Response, next: N
   })
 }
 
-export const serveImagesController = async (req: Request, res: Response, next: NextFunction) => {
+export const serveImagesController = async (req: Request, res: Response) => {
   const { name } = req.params
   return res.sendFile(path.resolve(UPLOADS_IMAGES_DIR, name), (err) => {
     if (err) {
@@ -24,7 +24,7 @@ export const serveImagesController = async (req: Request, res: Response, next: N
   })
 }
 
-export const uploadVideoController = async (req: Request, res: Response, next: NextFunction) => {
+export const uploadVideoController = async (req: Request, res: Response) => {
   const urlVideo = await mediasService.handleUploadVideo(req)
   return res.json({
     message: USERS_MESSAGES.UPLOAD_VIDEO_SUCCESS,
@@ -32,7 +32,7 @@ export const uploadVideoController = async (req: Request, res: Response, next: N
   })
 }
 
-export const uploadVideoHLSController = async (req: Request, res: Response, next: NextFunction) => {
+export const uploadVideoHLSController = async (req: Request, res: Response) => {
   const urlVideo = await mediasService.handleUploadVideoHLS(req)
   return res.json({
     message: USERS_MESSAGES.UPLOAD_VIDEO_SUCCESS,
@@ -40,7 +40,7 @@ export const uploadVideoHLSController = async (req: Request, res: Response, next
   })
 }
 
-export const videoStatusController = async (req: Request, res: Response, next: NextFunction) => {
+export const videoStatusController = async (req: Request, res: Response) => {
   const { id } = req.params
   const result = await mediasService.getVideoStatus(id as string)
   return res.json({
@@ -49,7 +49,7 @@ export const videoStatusController = async (req: Request, res: Response, next: N
   })
 }
 
-export const serveVideoStreamVideoController = async (req: Request, res: Response, next: NextFunction) => {
+export const serveVideoStreamVideoController = async (req: Request, res: Response) => {
   const range = req.headers.range
   if (!range) {
     return res.status(httpStatus.BAD_REQUEST).send(USERS_MESSAGES.INVALID_RANGE)
@@ -77,7 +77,7 @@ export const serveVideoStreamVideoController = async (req: Request, res: Respons
   videoStream.pipe(res)
 }
 
-export const serveM3U8Controller = async (req: Request, res: Response, next: NextFunction) => {
+export const serveM3U8Controller = async (req: Request, res: Response) => {
   const { id } = req.params
   return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, 'master.m3u8'), (err) => {
     if (err) {
@@ -86,7 +86,7 @@ export const serveM3U8Controller = async (req: Request, res: Response, next: Nex
   })
 }
 
-export const serveSegmentController = async (req: Request, res: Response, next: NextFunction) => {
+export const serveSegmentController = async (req: Request, res: Response) => {
   const { id, v, segment } = req.params
   return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, v, segment), (err) => {
     if (err) {
