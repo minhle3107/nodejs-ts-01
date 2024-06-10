@@ -24,3 +24,15 @@ export enum EnumEncodingStatus {
   Failed, // Xử lý thất bại
   NotFound
 }
+
+export enum EnumTweetType {
+  Tweet,
+  Retweet,
+  Comment,
+  QuoteTweet
+}
+
+export enum EnumTweetAudience {
+  Everyone,
+  TwitterCircle
+}
