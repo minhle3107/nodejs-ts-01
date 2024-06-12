@@ -2,17 +2,17 @@ import { ObjectId } from 'mongodb'
 import { EnumMediaType, EnumTweetAudience, EnumTweetType } from '~/constants/enums'
 
 interface ITweetConstructor {
-  _id: ObjectId
+  _id?: ObjectId
   user_id: ObjectId
   type: EnumTweetType
   audience: EnumTweetAudience
   content: string
-  parent_id: null | ObjectId
+  parent_id: null | string
   hashtags: ObjectId[]
-  mentions: ObjectId[]
+  mentions: string[]
   medias: EnumMediaType[]
-  guest_views: number
-  user_views: number
+  guest_views?: number
+  user_views?: number
   created_at?: Date
   updated_at?: Date
 }
@@ -29,8 +29,8 @@ export default class Tweet {
   medias: EnumMediaType[]
   guest_views: number
   user_views: number
-  created_at?: Date
-  updated_at?: Date
+  created_at: Date
+  updated_at: Date
 
   constructor({
     _id,
@@ -53,12 +53,12 @@ export default class Tweet {
     this.type = type
     this.audience = audience
     this.content = content
-    this.parent_id = parent_id
+    this.parent_id = parent_id ? new ObjectId(parent_id) : null
     this.hashtags = hashtags
-    this.mentions = mentions
+    this.mentions = mentions.map((item) => new ObjectId(item))
     this.medias = medias
-    this.guest_views = guest_views
-    this.user_views = user_views
+    this.guest_views = guest_views || 0
+    this.user_views = user_views || 0
     this.created_at = created_at || date
     this.updated_at = updated_at || date
   }

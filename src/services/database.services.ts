@@ -5,6 +5,7 @@ import User from '~/models/shcemas/User.schema'
 import RefreshToken from '~/models/shcemas/RefreshToken.schema'
 import Follower from '~/models/shcemas/Follower.schema'
 import VideoStatus from '~/models/shcemas/VideoStatus.schema'
+import Tweet from '~/models/shcemas/Tweet.schema'
 
 config()
 
@@ -76,6 +77,10 @@ class DatabaseService {
 
   get videoStatus(): Collection<VideoStatus> {
     return this.db.collection(process.env.DB_VIDEO_STATUS_COLLECTION as string)
+  }
+
+  get tweets(): Collection<Tweet> {
+    return this.db.collection(process.env.DB_TWEETS_COLLECTION as string)
   }
 }
 

@@ -1,6 +1,5 @@
 import User from '~/models/shcemas/User.schema'
 import databaseService from '~/services/database.services'
-import databaseServices from '~/services/database.services'
 import { IRegisterReqBody, IUpdateMeReqBody } from '~/models/requests/User.requests'
 import { handleHashPassword } from '~/utils/crypto'
 import { EnumTokenType, EnumUserVerifyStatus } from '~/constants/enums'
@@ -17,7 +16,7 @@ import httpStatus from '~/constants/httpStatus'
 
 config()
 
-class UsersServices {
+class UsersService {
   private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
     return handleSignToken({
       payload: {
@@ -142,7 +141,7 @@ class UsersServices {
 
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
 
-    await databaseServices.refreshTokens.insertOne(
+    await databaseService.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
         token: refresh_token,
@@ -167,7 +166,7 @@ class UsersServices {
 
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
 
-    await databaseServices.refreshTokens.insertOne(
+    await databaseService.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
         token: refresh_token,
@@ -241,7 +240,7 @@ class UsersServices {
 
       const { iat, exp } = await this.decodeRefreshToken(refresh_token)
 
-      await databaseServices.refreshTokens.insertOne(
+      await databaseService.refreshTokens.insertOne(
         new RefreshToken({
           user_id: user._id,
           token: refresh_token,
@@ -273,7 +272,7 @@ class UsersServices {
   }
 
   async logout(refresh_token: string) {
-    await databaseServices.refreshTokens.deleteOne({ token: refresh_token })
+    await databaseService.refreshTokens.deleteOne({ token: refresh_token })
     return { message: USERS_MESSAGES.LOGOUT_SUCCESSFULLY }
   }
 
@@ -296,7 +295,7 @@ class UsersServices {
 
     const decode_refresh_token = await this.decodeRefreshToken(new_refresh_token)
 
-    await databaseServices.refreshTokens.insertOne(
+    await databaseService.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
         token: new_refresh_token,
@@ -329,7 +328,7 @@ class UsersServices {
 
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
 
-    await databaseServices.refreshTokens.insertOne(
+    await databaseService.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
         token: refresh_token,
@@ -444,7 +443,7 @@ class UsersServices {
       followed_user_id: new ObjectId(followed_user_id)
     })
     if (follower === null) {
-      await databaseServices.followers.insertOne(
+      await databaseService.followers.insertOne(
         new Follower({
           user_id: new ObjectId(user_id),
           followed_user_id: new ObjectId(followed_user_id)
@@ -484,5 +483,5 @@ class UsersServices {
   }
 }
 
-const usersServices = new UsersServices()
+const usersServices = new UsersService()
 export default usersServices
