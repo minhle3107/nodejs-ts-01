@@ -8,6 +8,7 @@ import VideoStatus from '~/models/shcemas/VideoStatus.schema'
 import Tweet from '~/models/shcemas/Tweet.schema'
 import Hashtag from '~/models/shcemas/Hashtag.schema'
 import Bookmark from '~/models/shcemas/Bookmark.schema'
+import Like from '~/models/shcemas/Like.schema'
 
 config()
 
@@ -91,6 +92,10 @@ class DatabaseService {
 
   get bookmarks(): Collection<Bookmark> {
     return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
+  }
+
+  get likes(): Collection<Like> {
+    return this.db.collection(process.env.DB_LIKES_COLLECTION as string)
   }
 }
 
