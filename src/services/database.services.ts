@@ -6,6 +6,7 @@ import RefreshToken from '~/models/shcemas/RefreshToken.schema'
 import Follower from '~/models/shcemas/Follower.schema'
 import VideoStatus from '~/models/shcemas/VideoStatus.schema'
 import Tweet from '~/models/shcemas/Tweet.schema'
+import Hashtag from '~/models/shcemas/Hashtag.schema'
 
 config()
 
@@ -81,6 +82,10 @@ class DatabaseService {
 
   get tweets(): Collection<Tweet> {
     return this.db.collection(process.env.DB_TWEETS_COLLECTION as string)
+  }
+
+  get hashtags(): Collection<Hashtag> {
+    return this.db.collection(process.env.DB_HASHTAGS_COLLECTION as string)
   }
 }
 
