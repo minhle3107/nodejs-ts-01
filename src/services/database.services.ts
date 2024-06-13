@@ -7,6 +7,7 @@ import Follower from '~/models/shcemas/Follower.schema'
 import VideoStatus from '~/models/shcemas/VideoStatus.schema'
 import Tweet from '~/models/shcemas/Tweet.schema'
 import Hashtag from '~/models/shcemas/Hashtag.schema'
+import Bookmark from '~/models/shcemas/Bookmark.schema'
 
 config()
 
@@ -86,6 +87,10 @@ class DatabaseService {
 
   get hashtags(): Collection<Hashtag> {
     return this.db.collection(process.env.DB_HASHTAGS_COLLECTION as string)
+  }
+
+  get bookmarks(): Collection<Bookmark> {
+    return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
   }
 }
 

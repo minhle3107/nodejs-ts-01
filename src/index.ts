@@ -9,6 +9,7 @@ import * as process from 'node:process'
 import staticRoutes from '~/routes/static.routes'
 import cors from 'cors'
 import tweetsRoutes from '~/routes/tweets.routes'
+import bookmarksRoutes from '~/routes/bookmarks.routes'
 
 config()
 databaseService.connect().then(() => {
@@ -27,6 +28,7 @@ app.use('/users', usersRoutes)
 app.use('/medias', mediasRoutes)
 app.use('/static', staticRoutes)
 app.use('/tweets', tweetsRoutes)
+app.use('/bookmarks', bookmarksRoutes)
 // app.use('/static/video', express.static(UPLOADS_VIDEOS_DIR))
 app.use(defaultErrorHandler)
 app.listen(port, () => console.log(`App listening on port ${port}`))
