@@ -6,6 +6,7 @@ import {
   unBookmarksByBookmarkIdControllers,
   unBookmarksControllers
 } from '~/controllers/bookmarks.controllers'
+import { tweetIdValidator } from '~/middlewares/tweets.middlewares'
 
 const bookmarksRoutes = Router()
 
@@ -17,7 +18,13 @@ const bookmarksRoutes = Router()
  * Error: { error: string }
  *
  */
-bookmarksRoutes.post('/', accessTokenValidator, verifiedUserValidator, wrapRequestsHandler(bookmarksControllers))
+bookmarksRoutes.post(
+  '/',
+  accessTokenValidator,
+  verifiedUserValidator,
+  tweetIdValidator,
+  wrapRequestsHandler(bookmarksControllers)
+)
 
 /**
  * Description: Unbookmark a tweet
@@ -30,6 +37,7 @@ bookmarksRoutes.delete(
   '/tweet/:tweet_id',
   accessTokenValidator,
   verifiedUserValidator,
+  tweetIdValidator,
   wrapRequestsHandler(unBookmarksControllers)
 )
 
