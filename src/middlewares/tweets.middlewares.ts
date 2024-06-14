@@ -120,16 +120,14 @@ export const tweetIdValidator = validate(
     {
       tweet_id: {
         custom: {
-          options: async (value, { req }) => {
+          options: async (value) => {
             if (!ObjectId.isValid(value)) {
               throw new ErrorWithStatus({
                 status: HTTP_STATUS.BAD_REQUEST,
                 message: TWEETS_MESSAGES.INVALID_TWEET_ID
               })
             }
-            const tweet = await databaseService.tweets.findOne({
-              _id: new ObjectId(value)
-            })
+            const tweet = await databaseService.tweets.findOne({ _id: new ObjectId(value) })
             if (!tweet) {
               throw new ErrorWithStatus({
                 status: HTTP_STATUS.NOT_FOUND,
