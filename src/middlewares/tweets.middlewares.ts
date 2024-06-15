@@ -1,13 +1,16 @@
 import { validate } from '~/utils/validation'
 import { checkSchema } from 'express-validator'
 import { numberEnumToArray } from '~/utils/commons'
-import { EnumMediaType, EnumTweetAudience, EnumTweetType } from '~/constants/enums'
-import { TWEETS_MESSAGES } from '~/constants/messages'
+import { EnumMediaType, EnumTweetAudience, EnumTweetType, EnumUserVerifyStatus } from '~/constants/enums'
+import USERS_MESSAGES, { TWEETS_MESSAGES } from '~/constants/messages'
 import { ObjectId } from 'mongodb'
 import { isEmpty } from 'lodash'
 import databaseService from '~/services/database.services'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
+import { NextFunction, Request, Response } from 'express'
+import Tweet from '~/models/shcemas/Tweet.schema'
+import { wrapRequestsHandler } from '~/utils/handlers'
 
 const tweetTypes = numberEnumToArray(EnumTweetType)
 const tweetAudiences = numberEnumToArray(EnumTweetAudience)
@@ -120,7 +123,7 @@ export const tweetIdValidator = validate(
     {
       tweet_id: {
         custom: {
-          options: async (value) => {
+          options: async (value, { req }) => {
             if (!ObjectId.isValid(value)) {
               throw new ErrorWithStatus({
                 status: HTTP_STATUS.BAD_REQUEST,
@@ -134,6 +137,7 @@ export const tweetIdValidator = validate(
                 message: TWEETS_MESSAGES.TWEET_NOT_FOUND
               })
             }
+            ;(req as Request).tweet = tweet
             return true
           }
         }
@@ -142,3 +146,41 @@ export const tweetIdValidator = validate(
     ['body', 'params']
   )
 )
+
+// Muốn sử dụng async/await trong handler express thì phải có try catch
+// Nếu khôgn dùng try catch thì phải dùng wrapRequestsHandler
+export const audienceValidator = wrapRequestsHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const tweet = req.tweet as Tweet
+  if (tweet.audience === EnumTweetAudience.TwitterCircle) {
+    // Kiểm tra người xem tweet đã đằn nhập hay chưa
+    if (!req.decoded_authorization) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.UNAUTHORIZED,
+        message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED
+      })
+    }
+
+    // Kiểm tra tài khoản tác giả có ổn (bị khóa hay bị xóa) không
+    const author = await databaseService.users.findOne({
+      _id: new ObjectId(tweet.user_id)
+    })
+
+    if (!author || author.verify_status === EnumUserVerifyStatus.Banned) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: USERS_MESSAGES.USER_NOT_FOUND
+      })
+    }
+
+    //  Kiểm tra xem người xem tweet này có nằm trong Twitter Cỉcle của tác giả hay không
+    const { user_id } = req.decoded_authorization
+    const isInTwitterCircle = author.twitter_circle.some((user_circle_id) => user_circle_id.equals(user_id))
+    if (!author._id.equals(user_id) && !isInTwitterCircle) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.FORBIDDEN,
+        message: TWEETS_MESSAGES.TWEET_IS_NOT_PUBLIC
+      })
+    }
+  }
+  next()
+})

@@ -1,5 +1,6 @@
 import User from '~/models/shcemas/User.schema'
 import { ITokenPayload } from '~/models/requests/User.requests'
+import Tweet from '~/models/shcemas/Tweet.schema'
 
 declare module 'express' {
   interface Request {
@@ -8,5 +9,6 @@ declare module 'express' {
     decoded_refresh_token?: ITokenPayload
     decoded_email_verify_token?: ITokenPayload
     decoded_forgot_password_token?: ITokenPayload
+    tweet?: Tweet
   }
 }
