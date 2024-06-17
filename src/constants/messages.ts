@@ -97,3 +97,38 @@ const USERS_MESSAGES = {
   GET_VIDEO_STATUS_SUCCESSFULLY: 'Get video status successfully'
 } as const
 export default USERS_MESSAGES
+
+export const TWEETS_MESSAGES = {
+  INVALID_TYPE: 'Invalid type',
+  INVALID_AUDIENCE: 'Invalid audience',
+  PARENT_ID_MUST_BE_A_VALID_TWITTER_ID: 'Parent id must be a valid twitter id',
+  PARENT_ID_MUST_BE_NULL: 'Parent id must be null',
+  CONTENT_MUST_BE_A_NON_EMPTY_STRING: 'Content must be a non-empty string',
+  CONTENT_MUST_BE_EMPTY_STRING: 'Content must be empty string',
+  HASHTAG_MUST_BE_AN_ARRAY_OF_STRING: 'Hashtag must be an array of string',
+  MENTION_MUST_BE_AN_ARRAY_OF_USER_ID: 'Mention must be an array of user id',
+  MEDIA_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'Media must be an array of media object',
+  TWEET_CREATED_SUCCESSFULLY: 'Tweet created successfully',
+  INVALID_TWEET_ID: 'Invalid tweet id',
+  TWEET_NOT_FOUND: 'Tweet not found',
+  TWEET_IS_NOT_PUBLIC: 'Tweet is not public',
+  GET_TWEET_SUCCESSFULLY: 'Get tweet successfully',
+  GET_TWEET_CHILDREN_SUCCESSFULLY: 'Get tweet children successfully',
+  LIMIT_MUST_BE_BETWEEN_1_AND_100: 'Limit must be between 1 and 100',
+  PAGE_MUST_BE_GREATER_THAN_0: 'Page must be greater than 0',
+  GET_NEW_FEEDS_SUCCESSFULLY: 'Get new feeds successfully'
+} as const
+
+export const BOOKMARKS_MESSAGES = {
+  BOOKMARK_CREATED_SUCCESSFULLY: 'Bookmark created successfully',
+  UN_BOOKMARK_SUCCESSFULLY: 'Un bookmark successfully'
+} as const
+
+export const LIKES_MESSAGES = {
+  LIKE_TWEET_SUCCESSFULLY: 'Like tweet successfully',
+  UN_LIKE_SUCCESSFULLY: 'Unlike successfully'
+} as const
+
+export const SEARCHES_MESSAGES = {
+  SEARCH_SUCCESS: 'Search successfully'
+} as const

@@ -5,6 +5,10 @@ import User from '~/models/shcemas/User.schema'
 import RefreshToken from '~/models/shcemas/RefreshToken.schema'
 import Follower from '~/models/shcemas/Follower.schema'
 import VideoStatus from '~/models/shcemas/VideoStatus.schema'
+import Tweet from '~/models/shcemas/Tweet.schema'
+import Hashtag from '~/models/shcemas/Hashtag.schema'
+import Bookmark from '~/models/shcemas/Bookmark.schema'
+import Like from '~/models/shcemas/Like.schema'
 
 config()
 
@@ -31,6 +35,37 @@ class DatabaseService {
     }
   }
 
+  async indexUsers() {
+    if (!(await this.users.indexExists(['email_1_password_1', 'email_1', 'username_1']))) {
+      await Promise.all([
+        this.users.createIndex({ email: 1, password: 1 }),
+        this.users.createIndex({ email: 1 }, { unique: true }),
+        this.users.createIndex({ username: 1 }, { unique: true })
+      ])
+    }
+  }
+
+  async indexRefreshTokens() {
+    if (!(await this.users.indexExists(['token_1', 'exp_1']))) {
+      await Promise.all([
+        this.refreshTokens.createIndex({ token: 1 }),
+        this.refreshTokens.createIndex({ exp: 1 }, { expireAfterSeconds: 0 })
+      ])
+    }
+  }
+
+  async indexVideoStatus() {
+    if (!(await this.videoStatus.indexExists('name_1'))) {
+      await this.videoStatus.createIndex({ name: 1 })
+    }
+  }
+
+  async indexFollowers() {
+    if (!(await this.followers.indexExists('user_id_1_followed_user_id_1'))) {
+      await this.followers.createIndex({ user_id: 1, followed_user_id: 1 })
+    }
+  }
+
   get users(): Collection<User> {
     return this.db.collection(process.env.DB_USER_COLLECTION as string)
   }
@@ -45,6 +80,22 @@ class DatabaseService {
 
   get videoStatus(): Collection<VideoStatus> {
     return this.db.collection(process.env.DB_VIDEO_STATUS_COLLECTION as string)
+  }
+
+  get tweets(): Collection<Tweet> {
+    return this.db.collection(process.env.DB_TWEETS_COLLECTION as string)
+  }
+
+  get hashtags(): Collection<Hashtag> {
+    return this.db.collection(process.env.DB_HASHTAGS_COLLECTION as string)
+  }
+
+  get bookmarks(): Collection<Bookmark> {
+    return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
+  }
+
+  get likes(): Collection<Like> {
+    return this.db.collection(process.env.DB_LIKES_COLLECTION as string)
   }
 }
 

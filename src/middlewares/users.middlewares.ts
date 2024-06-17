@@ -549,3 +549,15 @@ export const changePasswordValidator = validate(
     confirm_password: confirmPasswordSchema
   })
 )
+
+export const isUserLoggedInValidator = (middleware: (req: Request, res: Response, next: NextFunction) => void) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    // phân biệt req.header với req.headers
+    // req.header('Authorization'): trả về giá trị của header Authorization
+    // req.headers.authorization: trả về giá trị của header Authorization
+    if (req.headers.authorization) {
+      return middleware(req, res, next)
+    }
+    next()
+  }
+}

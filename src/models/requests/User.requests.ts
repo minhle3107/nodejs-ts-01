@@ -1,5 +1,6 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { EnumTokenType, EnumUserVerifyStatus } from '~/constants/enums'
+import { ParamsDictionary } from 'express-serve-static-core'
 
 export interface IRegisterReqBody {
   name: string
@@ -36,6 +37,8 @@ export interface ITokenPayload extends JwtPayload {
   user_id: string
   token_type: EnumTokenType
   verify_status: EnumUserVerifyStatus
+  iat: number
+  exp: number
 }
 
 export interface ILogoutReqBody {
@@ -61,11 +64,11 @@ export interface IFollowReqBody {
   followed_user_id: string
 }
 
-export interface IUnfollowReqParams {
+export interface IUnfollowReqParams extends ParamsDictionary {
   user_id: string
 }
 
-export interface IGetProfileReqParams {
+export interface IGetProfileReqParams extends ParamsDictionary {
   username: string
 }
 

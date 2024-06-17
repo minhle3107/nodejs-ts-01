@@ -12,7 +12,7 @@ interface IUserType {
   email_verify_token?: string
   forgot_password_token?: string
   verify_status?: EnumUserVerifyStatus
-
+  twitter_circle?: ObjectId[] // danh sách id của những người user add vào twitter circle
   // Optional fields
   bio?: string
   location?: string
@@ -23,24 +23,24 @@ interface IUserType {
 }
 
 export default class User {
-  public _id?: ObjectId
-  public name: string
-  public date_of_birth: Date
-  public email: string
-  public password: string
-  public created_at: Date
-  public updated_at: Date
-  public email_verify_token: string
-  public forgot_password_token: string
-  public verify_status: EnumUserVerifyStatus
-
+  _id?: ObjectId
+  name: string
+  date_of_birth: Date
+  email: string
+  password: string
+  created_at: Date
+  updated_at: Date
+  email_verify_token: string
+  forgot_password_token: string
+  verify_status: EnumUserVerifyStatus
+  twitter_circle: ObjectId[]
   // Optional fields
-  public bio: string
-  public location: string
-  public website: string
-  public username: string
-  public avatar: string
-  public cover_photo: string
+  bio: string
+  location: string
+  website: string
+  username: string
+  avatar: string
+  cover_photo: string
 
   constructor(user: IUserType) {
     const date = new Date()
@@ -54,7 +54,7 @@ export default class User {
     this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
     this.verify_status = user.verify_status || EnumUserVerifyStatus.Unverified
-
+    this.twitter_circle = user.twitter_circle || []
     // Optional fields
     this.bio = user.bio || ''
     this.location = user.location || ''

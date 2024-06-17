@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import usersServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
@@ -23,14 +23,9 @@ import USERS_MESSAGES from '~/constants/messages'
 import databaseService from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { EnumUserVerifyStatus } from '~/constants/enums'
-import { pick } from 'lodash'
 import * as process from 'node:process'
 
-export const loginController = async (
-  req: Request<ParamsDictionary, any, ILoginReqBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const loginController = async (req: Request<ParamsDictionary, any, ILoginReqBody>, res: Response) => {
   const user = req.user as User
   const user_id = user._id as ObjectId
   const result = await usersServices.login({ user_id: user_id.toString(), verify_status: user.verify_status })
@@ -47,11 +42,7 @@ export const oauthGoogleController = async (req: Request, res: Response) => {
   return res.redirect(urlRedirect)
 }
 
-export const registerController = async (
-  req: Request<ParamsDictionary, any, IRegisterReqBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const registerController = async (req: Request<ParamsDictionary, any, IRegisterReqBody>, res: Response) => {
   // throw new Error('Lỗi rồi')
   const result = await usersServices.registerUser(req.body)
   return res.status(HTTP_STATUS.OK).json({
@@ -71,8 +62,8 @@ export const refreshTokenController = async (
   res: Response
 ) => {
   const { refresh_token } = req.body
-  const { user_id, verify_status } = req.decoded_refresh_token as ITokenPayload
-  const result = await usersServices.refreshToken({ user_id, verify_status, refresh_token })
+  const { user_id, verify_status, exp } = req.decoded_refresh_token as ITokenPayload
+  const result = await usersServices.refreshToken({ user_id, verify_status, refresh_token, exp })
   return res.json({
     message: USERS_MESSAGES.REFRESH_TOKEN_SUCCESSFULLY,
     result
@@ -81,8 +72,7 @@ export const refreshTokenController = async (
 
 export const verifyEmailController = async (
   req: Request<ParamsDictionary, any, IVerifyEmailReqBody>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   const { user_id } = req.decoded_email_verify_token as ITokenPayload
   const user = await databaseService.users.findOne({
@@ -111,7 +101,7 @@ export const verifyEmailController = async (
   })
 }
 
-export const resendVerifyEmailController = async (req: Request, res: Response, next: NextFunction) => {
+export const resendVerifyEmailController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as ITokenPayload
   const user = await databaseService.users.findOne({
     _id: new ObjectId(user_id)
@@ -135,8 +125,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response, n
 
 export const forgotPasswordController = async (
   req: Request<ParamsDictionary, any, IForgotPasswordReqBody>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   const { _id, verify_status } = req.user as User
   const result = await usersServices.forgotPassword({
@@ -148,16 +137,14 @@ export const forgotPasswordController = async (
 
 export const verifyForgotPasswordController = async (
   req: Request<ParamsDictionary, any, IVerifyForgotPasswordReqBody>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   return res.json({ message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESSFULLY })
 }
 
 export const resetPasswordController = async (
   req: Request<ParamsDictionary, any, IResetPasswordReqBody>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   const { user_id } = req.decoded_forgot_password_token as ITokenPayload
   const { password } = req.body
@@ -165,17 +152,13 @@ export const resetPasswordController = async (
   return res.json({ result })
 }
 
-export const getMeController = async (req: Request, res: Response, next: NextFunction) => {
+export const getMeController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as ITokenPayload
   const user = await usersServices.getMe(user_id)
   return res.json({ message: USERS_MESSAGES.GET_ME_SUCCESSFULLY, result: user })
 }
 
-export const updateMeController = async (
-  req: Request<ParamsDictionary, any, IUpdateMeReqBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const updateMeController = async (req: Request<ParamsDictionary, any, IUpdateMeReqBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as ITokenPayload
   const { body } = req
   // console.log(body)
@@ -195,30 +178,21 @@ export const updateMeController = async (
 
 export const getProfileController = async (
   req: Request<ParamsDictionary, any, IGetProfileReqParams>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   const { username } = req.params
   const user = await usersServices.getProfile(username)
   return res.json({ message: USERS_MESSAGES.GET_PROFILE_SUCCESSFULLY, result: user })
 }
 
-export const followController = async (
-  req: Request<ParamsDictionary, any, IFollowReqBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const followController = async (req: Request<ParamsDictionary, any, IFollowReqBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as ITokenPayload
   const { followed_user_id } = req.body
   const user = await usersServices.followUser(user_id, followed_user_id)
   return res.json({ result: user })
 }
 
-export const unfollowController = async (
-  req: Request<ParamsDictionary, any, IUnfollowReqParams>,
-  res: Response,
-  next: NextFunction
-) => {
+export const unfollowController = async (req: Request<ParamsDictionary, any, IUnfollowReqParams>, res: Response) => {
   const { user_id } = req.decoded_authorization as ITokenPayload
   const { user_id: followed_user_id } = req.params
   const user = await usersServices.unfollowUser(user_id, followed_user_id)
@@ -227,8 +201,7 @@ export const unfollowController = async (
 
 export const changePasswordController = async (
   req: Request<ParamsDictionary, any, IChangePasswordReqBody>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   const { user_id } = req.decoded_authorization as ITokenPayload
   const { password } = req.body
