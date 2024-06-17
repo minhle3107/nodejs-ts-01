@@ -11,7 +11,6 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { NextFunction, Request, Response } from 'express'
 import Tweet from '~/models/shcemas/Tweet.schema'
 import { wrapRequestsHandler } from '~/utils/handlers'
-import { IsNumericOptions } from 'express-validator/src/options'
 
 const tweetTypes = numberEnumToArray(EnumTweetType)
 const tweetAudiences = numberEnumToArray(EnumTweetAudience)
