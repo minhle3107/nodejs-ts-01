@@ -11,6 +11,7 @@ import cors from 'cors'
 import tweetsRoutes from '~/routes/tweets.routes'
 import bookmarksRoutes from '~/routes/bookmarks.routes'
 import likesRoutes from '~/routes/likes.routes'
+import searchRoutes from '~/routes/search.routes'
 // import '~/utils/fake'
 
 config()
@@ -32,6 +33,7 @@ app.use('/static', staticRoutes)
 app.use('/tweets', tweetsRoutes)
 app.use('/bookmarks', bookmarksRoutes)
 app.use('/likes', likesRoutes)
+app.use('/search', searchRoutes)
 // app.use('/static/video', express.static(UPLOADS_VIDEOS_DIR))
 app.use(defaultErrorHandler)
 app.listen(port, () => console.log(`App listening on port ${port}`))
