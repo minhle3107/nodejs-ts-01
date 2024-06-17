@@ -11,6 +11,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { NextFunction, Request, Response } from 'express'
 import Tweet from '~/models/shcemas/Tweet.schema'
 import { wrapRequestsHandler } from '~/utils/handlers'
+import { IsNumericOptions } from 'express-validator/src/options'
 
 const tweetTypes = numberEnumToArray(EnumTweetType)
 const tweetAudiences = numberEnumToArray(EnumTweetAudience)
@@ -297,3 +298,41 @@ export const audienceValidator = wrapRequestsHandler(async (req: Request, res: R
   }
   next()
 })
+
+export const getTweetChildrenValidator = validate(
+  checkSchema(
+    {
+      tweet_type: {
+        isIn: {
+          options: [EnumTweetType],
+          errorMessage: TWEETS_MESSAGES.INVALID_TYPE
+        }
+      },
+      limit: {
+        isNumeric: true,
+        custom: {
+          options: async (value, { req }) => {
+            const num = Number(value)
+            if (num > 100 || num < 1) {
+              throw new Error(TWEETS_MESSAGES.LIMIT_MUST_BE_BETWEEN_1_AND_100)
+            }
+            return true
+          }
+        }
+      },
+      page: {
+        isNumeric: true,
+        custom: {
+          options: async (value, { req }) => {
+            const num = Number(value)
+            if (num < 1) {
+              throw new Error(TWEETS_MESSAGES.PAGE_MUST_BE_GREATER_THAN_0)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['query']
+  )
+)

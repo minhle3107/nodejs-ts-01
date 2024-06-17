@@ -2,7 +2,12 @@ import express from 'express'
 import { accessTokenValidator, isUserLoggedInValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestsHandler } from '~/utils/handlers'
 import { createTweetController, getTweetChildrenController, getTweetController } from '~/controllers/tweets.controllers'
-import { audienceValidator, createTweetValidator, tweetIdValidator } from '~/middlewares/tweets.middlewares'
+import {
+  audienceValidator,
+  createTweetValidator,
+  getTweetChildrenValidator,
+  tweetIdValidator
+} from '~/middlewares/tweets.middlewares'
 
 const tweetsRoutes = express.Router()
 
@@ -51,6 +56,7 @@ tweetsRoutes.get(
 tweetsRoutes.get(
   '/:tweet_id/children',
   tweetIdValidator,
+  getTweetChildrenValidator,
   isUserLoggedInValidator(accessTokenValidator),
   isUserLoggedInValidator(verifiedUserValidator),
   audienceValidator,
