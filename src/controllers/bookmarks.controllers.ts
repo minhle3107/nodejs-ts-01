@@ -23,7 +23,7 @@ export const unBookmarksControllers = async (req: Request, res: Response) => {
   await bookmarksService.unBookmarkTweet(user_id, req.params.tweet_id)
 
   return res.json({
-    message: BOOKMARKS_MESSAGES.UNBOOKMARK_SUCCESSFULLY
+    message: BOOKMARKS_MESSAGES.UN_BOOKMARK_SUCCESSFULLY
   })
 }
 
@@ -32,6 +32,6 @@ export const unBookmarksByBookmarkIdControllers = async (req: Request, res: Resp
   await bookmarksService.unBookmarkTweetByBookmarkId(user_id, req.params.bookmark_id)
 
   return res.json({
-    message: BOOKMARKS_MESSAGES.UNBOOKMARK_SUCCESSFULLY
+    message: BOOKMARKS_MESSAGES.UN_BOOKMARK_SUCCESSFULLY
   })
 }

@@ -118,7 +118,7 @@ export const TWEETS_MESSAGES = {
 
 export const BOOKMARKS_MESSAGES = {
   BOOKMARK_CREATED_SUCCESSFULLY: 'Bookmark created successfully',
-  UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully'
+  UN_BOOKMARK_SUCCESSFULLY: 'Un bookmark successfully'
 } as const
 
 export const LIKES_MESSAGES = {
