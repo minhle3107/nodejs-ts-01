@@ -15,8 +15,11 @@ export interface ITweetParam extends ParamsDictionary {
   tweet_id: string
 }
 
-export interface ITweetQuery extends Query {
+export interface IPagination {
   limit: string
   page: string
+}
+
+export interface ITweetQuery extends IPagination, Query {
   tweet_type: string
 }

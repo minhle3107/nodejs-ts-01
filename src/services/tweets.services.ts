@@ -243,6 +243,28 @@ class TweetsService {
       total
     }
   }
+
+  async getNewFeeds({ user_id, limit, page }: { user_id: string; limit: number; page: number }) {
+    const followed_user_id = await databaseService.followers
+      .find(
+        {
+          user_id: new ObjectId(user_id)
+        },
+        {
+          projection: {
+            followed_user_id: 1,
+            _id: 0
+          }
+        }
+      )
+      .toArray()
+    const ids = followed_user_id.map((item) => item.followed_user_id)
+
+    // Mong muốn newfeeds sẽ lấy luôn cả tweet của mình
+    ids.push(new ObjectId(user_id))
+
+    return ids
+  }
 }
 
 export default new TweetsService()
