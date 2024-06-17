@@ -115,7 +115,8 @@ export const TWEETS_MESSAGES = {
   GET_TWEET_SUCCESSFULLY: 'Get tweet successfully',
   GET_TWEET_CHILDREN_SUCCESSFULLY: 'Get tweet children successfully',
   LIMIT_MUST_BE_BETWEEN_1_AND_100: 'Limit must be between 1 and 100',
-  PAGE_MUST_BE_GREATER_THAN_0: 'Page must be greater than 0'
+  PAGE_MUST_BE_GREATER_THAN_0: 'Page must be greater than 0',
+  GET_NEW_FEEDS_SUCCESSFULLY: 'Get new feeds successfully'
 } as const
 
 export const BOOKMARKS_MESSAGES = {
