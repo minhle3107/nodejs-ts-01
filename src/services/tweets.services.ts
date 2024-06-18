@@ -282,11 +282,11 @@ class TweetsService {
               as: 'user'
             }
           },
-          {
-            $unwind: {
-              path: '$user'
-            }
-          },
+          // {
+          //   $unwind: {
+          //     path: '$user'
+          //   }
+          // },
           {
             $match: {
               $or: [
@@ -444,11 +444,11 @@ class TweetsService {
               as: 'user'
             }
           },
-          {
-            $unwind: {
-              path: '$user'
-            }
-          },
+          // {
+          //   $unwind: {
+          //     path: '$user'
+          //   }
+          // },
           {
             $match: {
               $or: [

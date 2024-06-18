@@ -22,11 +22,33 @@ class SearchService {
               as: 'user'
             }
           },
-          {
-            $unwind: {
-              path: '$user'
-            }
-          },
+          // {
+          //   $unwind: {
+          //     path: '$user'
+          //   }
+          // },
+          // {
+          //   $addFields: {
+          //     user: {
+          //       $cond: {
+          //         if: {
+          //           $eq: [
+          //             {
+          //               $size: '$user'
+          //             },
+          //             0
+          //           ]
+          //         },
+          //         // Kiểm tra nếu array 'user' rỗng
+          //         then: null,
+          //         // hoặc giá trị mặc định bạn muốn
+          //         else: {
+          //           $arrayToObject: '$user'
+          //         } // Chuyển array thành object nếu không rỗng
+          //       }
+          //     }
+          //   }
+          // },
           {
             $match: {
               $or: [
@@ -184,11 +206,11 @@ class SearchService {
               as: 'user'
             }
           },
-          {
-            $unwind: {
-              path: '$user'
-            }
-          },
+          // {
+          //   $unwind: {
+          //     path: '$user'
+          //   }
+          // },
           {
             $match: {
               $or: [
