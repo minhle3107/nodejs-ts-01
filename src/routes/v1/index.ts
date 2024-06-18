@@ -8,7 +8,7 @@ import likesRoutes from '~/routes/v1/likes.routes'
 import searchRoutes from '~/routes/v1/search.routes'
 import { UPLOADS_VIDEOS_DIR } from '~/constants/dir'
 
-const v1Routes = express()
+const v1Routes = express.Router()
 
 v1Routes.use('/users', usersRoutes)
 v1Routes.use('/medias', mediasRoutes)

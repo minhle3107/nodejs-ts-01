@@ -14,6 +14,8 @@ config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@twitter.rifbmvv.mongodb.net/?retryWrites=true&w=majority&appName=Twitter`
 
+// const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@learning.abdluxx.mongodb.net/?retryWrites=true&w=majority&appName=Learning`
+
 class DatabaseService {
   private client: MongoClient
   private db: Db
@@ -63,6 +65,12 @@ class DatabaseService {
   async indexFollowers() {
     if (!(await this.followers.indexExists('user_id_1_followed_user_id_1'))) {
       await this.followers.createIndex({ user_id: 1, followed_user_id: 1 })
+    }
+  }
+
+  async indexTweets() {
+    if (!(await this.tweets.indexExists('content_text'))) {
+      await this.tweets.createIndex({ content: 'text' })
     }
   }
 

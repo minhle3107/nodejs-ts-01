@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import express from 'express'
 import {
   serveImagesController,
   serveM3U8Controller,
@@ -6,7 +6,7 @@ import {
   serveVideoStreamVideoController
 } from '~/controllers/medias.controllers'
 
-const staticRoutes = Router()
+const staticRoutes = express.Router()
 
 staticRoutes.get('/image/:name', serveImagesController)
 staticRoutes.get('/video-stream/:name', serveVideoStreamVideoController)

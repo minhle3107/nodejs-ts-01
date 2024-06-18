@@ -3,6 +3,7 @@ import process from 'node:process'
 import { config } from 'dotenv'
 import databaseService from '~/services/database.services'
 import { initFolder } from '~/utils/file'
+// import '~/utils/fake'
 
 config()
 databaseService.connect().then(() => {
@@ -10,9 +11,10 @@ databaseService.connect().then(() => {
   databaseService.indexRefreshTokens()
   databaseService.indexVideoStatus()
   databaseService.indexFollowers()
+  databaseService.indexTweets()
 })
 
 initFolder()
 
-const port = process.env.PORT || 4000
-app.listen(port, () => console.log(`App listening on port ${port}`))
+const PORT = process.env.PORT || 4000
+app.listen(PORT, () => console.log(`App listening on port ${PORT}`))

@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import express from 'express'
 import {
   uploadImageController,
   uploadVideoController,
@@ -8,7 +8,7 @@ import {
 import { wrapRequestsHandler } from '~/utils/handlers'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 
-const mediasRoutes = Router()
+const mediasRoutes = express.Router()
 
 mediasRoutes.post(
   '/upload-image',

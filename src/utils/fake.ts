@@ -13,10 +13,10 @@ import tweetsServices from '~/services/tweets.services'
 const PASSWORD = 'Admin@123'
 
 // ID của tài khoản của mình, dùng đề follow người khác
-const MY_ID = new ObjectId('666e68b4f2700de7ca56be63')
+const MY_ID = new ObjectId('6671412dfb2037288db56921')
 
 // Số lượng user được tạo, mỗi user sẽ mặc định tweet 2 cái
-const USER_COUNT = 100
+const USER_COUNT = 39
 
 const createRandomUser = () => {
   const user: IRegisterReqBody = {
@@ -34,7 +34,7 @@ const createRandomTweet = () => {
     type: EnumTweetType.Tweet,
     audience: EnumTweetAudience.Everyone,
     content: faker.lorem.paragraph({ min: 10, max: 166 }),
-    hashtags: [],
+    hashtags: ['ts', 'java'],
     medias: [],
     mentions: [],
     parent_id: null
