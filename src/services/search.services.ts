@@ -239,6 +239,11 @@ class SearchService {
         .toArray()
     ])
 
+    // Kiểm tra nếu không tìm thấy kết quả
+    if (tweets.length === 0) {
+      return { tweets: [], total: 0 }
+    }
+
     const tweet_ids = tweets.map((tweet) => tweet._id as ObjectId)
 
     const date = new Date()

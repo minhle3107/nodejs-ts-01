@@ -12,9 +12,9 @@ import Like from '~/models/shcemas/Like.schema'
 
 config()
 
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@twitter.rifbmvv.mongodb.net/?retryWrites=true&w=majority&appName=Twitter`
+// const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@twitter.rifbmvv.mongodb.net/?retryWrites=true&w=majority&appName=Twitter`
 
-// const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@learning.abdluxx.mongodb.net/?retryWrites=true&w=majority&appName=Learning`
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@learning.abdluxx.mongodb.net/?retryWrites=true&w=majority&appName=Learning`
 
 class DatabaseService {
   private client: MongoClient
@@ -70,7 +70,7 @@ class DatabaseService {
 
   async indexTweets() {
     if (!(await this.tweets.indexExists('content_text'))) {
-      await this.tweets.createIndex({ content: 'text' })
+      await this.tweets.createIndex({ content: 'text' }, { default_language: 'none' })
     }
   }
 

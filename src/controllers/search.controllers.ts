@@ -11,6 +11,14 @@ export const searchController = async (req: Request<ParamsDictionary, any, any, 
   const user_id = req.decoded_authorization?.user_id as string
 
   const result = await searchService.search({ content, limit, page, user_id })
+
+  // Kiểm tra nếu không tìm thấy kết quả
+  if (result.tweets.length === 0) {
+    return res.json({
+      message: SEARCHES_MESSAGES.NO_RESULT
+    })
+  }
+
   return res.json({
     message: SEARCHES_MESSAGES.SEARCH_SUCCESS,
     result: {

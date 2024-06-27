@@ -130,5 +130,6 @@ export const LIKES_MESSAGES = {
 } as const
 
 export const SEARCHES_MESSAGES = {
-  SEARCH_SUCCESS: 'Search successfully'
+  SEARCH_SUCCESS: 'Search successfully',
+  NO_RESULT: 'No result'
 } as const
