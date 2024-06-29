@@ -131,5 +131,9 @@ export const LIKES_MESSAGES = {
 
 export const SEARCHES_MESSAGES = {
   SEARCH_SUCCESS: 'Search successfully',
-  NO_RESULT: 'No result'
+  NO_RESULT: 'No result',
+  CONTENT_MUST_BE_A_STRING: 'Content must be a string',
+  CONTENT_IS_REQUIRED: 'Content is required',
+  MEDIA_TYPE_MUST_BE_ONE_OF: 'Media type must be one of',
+  PEOPLE_MUST_BE_ONE_OF: 'People must be one of'
 } as const

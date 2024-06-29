@@ -3,6 +3,7 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import { ISearchQuery } from '~/models/requests/Search.requests'
 import searchService from '~/services/search.services'
 import { SEARCHES_MESSAGES } from '~/constants/messages'
+import { EnumPeopleFollow } from '~/constants/enums'
 
 export const searchController = async (req: Request<ParamsDictionary, any, any, ISearchQuery>, res: Response) => {
   const content = req.query.content

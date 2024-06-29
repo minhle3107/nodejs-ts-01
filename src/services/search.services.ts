@@ -1,6 +1,6 @@
 import databaseService from '~/services/database.services'
 import { ObjectId } from 'mongodb'
-import { EnumMediaType, EnumMediaTypeQuery, EnumTweetType } from '~/constants/enums'
+import { EnumMediaType, EnumMediaTypeQuery, EnumPeopleFollow, EnumTweetType } from '~/constants/enums'
 
 class SearchService {
   async search({
@@ -16,7 +16,7 @@ class SearchService {
     page: number
     media_type?: EnumMediaTypeQuery
     user_id: string
-    people_follow?: string
+    people_follow?: EnumPeopleFollow
   }) {
     const $match: any = {
       $text: {
@@ -34,7 +34,7 @@ class SearchService {
       }
     }
 
-    if (people_follow && people_follow === '1') {
+    if (people_follow && people_follow === EnumPeopleFollow.Following) {
       const user_id_obj = new ObjectId(user_id)
       const followed_user_id = await databaseService.followers
         .find(
