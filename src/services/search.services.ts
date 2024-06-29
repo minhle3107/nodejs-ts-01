@@ -8,19 +8,22 @@ class SearchService {
     limit,
     page,
     media_type,
-    user_id
+    user_id,
+    people_follow
   }: {
     content: string
     limit: number
     page: number
-    media_type: EnumMediaTypeQuery
+    media_type?: EnumMediaTypeQuery
     user_id: string
+    people_follow?: string
   }) {
     const $match: any = {
       $text: {
         $search: content
       }
     }
+
     if (media_type) {
       if (media_type === EnumMediaTypeQuery.Image) {
         $match['medias.type'] = EnumMediaType.Image
@@ -28,6 +31,31 @@ class SearchService {
         $match['medias.type'] = {
           $in: [EnumMediaType.Video, EnumMediaType.HLS]
         }
+      }
+    }
+
+    if (people_follow && people_follow === '1') {
+      const user_id_obj = new ObjectId(user_id)
+      const followed_user_id = await databaseService.followers
+        .find(
+          {
+            user_id: user_id_obj
+          },
+          {
+            projection: {
+              followed_user_id: 1,
+              _id: 0
+            }
+          }
+        )
+        .toArray()
+      const ids = followed_user_id.map((item) => item.followed_user_id)
+
+      // Mong muốn newfeeds sẽ lấy luôn cả tweet của mình
+      ids.push(user_id_obj)
+
+      $match['user_id'] = {
+        $in: ids
       }
     }
 
@@ -258,11 +286,6 @@ class SearchService {
         .toArray()
     ])
 
-    // Kiểm tra nếu không tìm thấy kết quả
-    if (tweets.length === 0) {
-      return { tweets: [], total: 0 }
-    }
-
     const tweet_ids = tweets.map((tweet) => tweet._id as ObjectId)
 
     const date = new Date()
@@ -281,7 +304,10 @@ class SearchService {
       tweet.user_views += 1
     })
 
-    return { tweets, total: total[0].total }
+    return {
+      tweets,
+      total: total[0]?.total || 0
+    }
   }
 }
 
