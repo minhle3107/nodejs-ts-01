@@ -13,6 +13,7 @@ import Follower from '~/models/shcemas/Follower.schema'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import httpStatus from '~/constants/httpStatus'
+import { sendForgotPasswordEmail, sendVerifyRegisterEmail } from '~/utils/email'
 
 config()
 
@@ -149,7 +150,18 @@ class UsersService {
         exp
       })
     )
-    console.log('email_verify_token', email_verify_token)
+
+    /*
+     * Follow verify email
+     * 1. Gửi email chứa link verify email có dạng: https://domain.com/verify-email?token=email_verify_token
+     * 2. Khi người dùng click vào link thì gọi API verify email
+     * 3. API verify email sẽ kiểm tra token và update trạng thái verify_status của user thành Verified
+     * 4. Sau khi verify email thành công thì trả về access_token và refresh_token
+     */
+    // console.log('email_verify_token', email_verify_token)
+
+    await sendVerifyRegisterEmail(payload.email, email_verify_token)
+    // console.log(`href="${process.env.CLIENT_URL}/verify-email?token=${email_verify_token}`)
     return { access_token, refresh_token }
   }
 
@@ -339,7 +351,7 @@ class UsersService {
     return { access_token, refresh_token }
   }
 
-  async resendVerifyEmail(user_id: string) {
+  async resendVerifyEmail(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({
       user_id,
       verify_status: EnumUserVerifyStatus.Unverified
@@ -353,11 +365,19 @@ class UsersService {
         $currentDate: { updated_at: true }
       }
     )
-    console.log('Resend verify email', email_verify_token)
+    await sendVerifyRegisterEmail(email, email_verify_token)
     return { message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESSFULLY }
   }
 
-  async forgotPassword({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
+  async forgotPassword({
+    user_id,
+    verify_status,
+    email
+  }: {
+    user_id: string
+    verify_status: EnumUserVerifyStatus
+    email: string
+  }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify_status })
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) },
@@ -369,7 +389,8 @@ class UsersService {
       }
     )
     // Gửi email chứa link reset password có dạng: https://domain.com/reset-password?token=forgot_password_token
-    console.log('Forgot password token', forgot_password_token)
+    // console.log('Forgot password token', forgot_password_token)
+    await sendForgotPasswordEmail(email, forgot_password_token)
     return { message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD }
   }
 
