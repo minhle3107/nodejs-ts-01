@@ -13,6 +13,8 @@ import { IMedia } from '~/models/Other'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
 import databaseService from '~/services/database.services'
 import VideoStatus from '~/models/shcemas/VideoStatus.schema'
+import { uploadImageToS3 } from '~/utils/s3'
+import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
 
 config()
 
@@ -106,8 +108,33 @@ class MediasService {
         fs.unlinkSync(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/static/image/${newNameImage}.jpeg`
-            : `http://localhost:${process.env.PORT}/static/image/${newNameImage}.jpeg`,
+            ? `${process.env.HOST}/api/v1/static/image/${newNameImage}.jpeg`
+            : `http://localhost:${process.env.PORT}/api/v1/static/image/${newNameImage}.jpeg`,
+          type: EnumMediaType.Image
+        }
+      })
+    )
+    return result
+  }
+
+  async handleUploadImageToS3(req: Request) {
+    const mime = (await import('mime')).default
+    const files = await handleUploadImage(req)
+    const result: IMedia[] = await Promise.all(
+      files.map(async (file) => {
+        const newNameImage = getNameFromFullName(file.newFilename)
+        const newFileFullName = `${newNameImage}.jpeg`
+        const newPath = path.resolve(UPLOADS_IMAGES_DIR, newFileFullName)
+        await sharp(file.filepath).jpeg().toFile(newPath)
+        const s3Result = await uploadImageToS3({
+          fileName: newFileFullName,
+          filePath: newPath,
+          contentType: mime.getType(newPath) as string
+        })
+
+        await Promise.all([fsPromises.unlink(file.filepath), fsPromises.unlink(newPath)])
+        return {
+          url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
           type: EnumMediaType.Image
         }
       })
@@ -120,8 +147,8 @@ class MediasService {
     const result: IMedia[] = files.map((file) => {
       return {
         url: isProduction
-          ? `${process.env.HOST}/static/video-stream/${file.newFilename}`
-          : `http://localhost:${process.env.PORT}/static/video-stream/${file.newFilename}`,
+          ? `${process.env.HOST}/api/v1/static/video-stream/${file.newFilename}`
+          : `http://localhost:${process.env.PORT}/api/v1/static/video-stream/${file.newFilename}`,
         type: EnumMediaType.Video
       }
     })
@@ -137,8 +164,8 @@ class MediasService {
         await queue.enqueue(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/static/video-hls/${folderVideo}/master.m3u8`
-            : `http://localhost:${process.env.PORT}/static/video-hls/${folderVideo}/master.m3u8`,
+            ? `${process.env.HOST}/api/v1/static/video-hls/${folderVideo}/master.m3u8`
+            : `http://localhost:${process.env.PORT}/api/v1/static/video-hls/${folderVideo}/master.m3u8`,
           type: EnumMediaType.HLS
         }
       })

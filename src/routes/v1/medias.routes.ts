@@ -1,6 +1,7 @@
 import express from 'express'
 import {
   uploadImageController,
+  uploadImageToS3Controller,
   uploadVideoController,
   uploadVideoHLSController,
   videoStatusController
@@ -15,6 +16,12 @@ mediasRoutes.post(
   accessTokenValidator,
   verifiedUserValidator,
   wrapRequestsHandler(uploadImageController)
+)
+mediasRoutes.post(
+  '/upload-image-to-s3',
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestsHandler(uploadImageToS3Controller)
 )
 
 mediasRoutes.post(

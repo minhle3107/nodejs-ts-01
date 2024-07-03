@@ -4,6 +4,7 @@ import { config } from 'dotenv'
 import databaseService from '~/services/database.services'
 import { initFolder } from '~/utils/file'
 // import '~/utils/fake'
+// import '~/utils/s3'
 
 config()
 databaseService.connect().then(() => {

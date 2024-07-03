@@ -15,6 +15,14 @@ export const uploadImageController = async (req: Request, res: Response) => {
   })
 }
 
+export const uploadImageToS3Controller = async (req: Request, res: Response) => {
+  const urlImage = await mediasService.handleUploadImageToS3(req)
+  return res.json({
+    message: USERS_MESSAGES.UPLOAD_IMAGE_SUCCESS,
+    result: urlImage
+  })
+}
+
 export const serveImagesController = async (req: Request, res: Response) => {
   const { name } = req.params
   return res.sendFile(path.resolve(UPLOADS_IMAGES_DIR, name), (err) => {
