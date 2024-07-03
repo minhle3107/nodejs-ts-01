@@ -31,6 +31,14 @@ const io = new Server(httpServer, {
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`)
 
+  socket.emit('hi', {
+    message: 'Hello from server'
+  })
+
+  socket.on('hello', (data) => {
+    console.log(data)
+  })
+
   socket.on('disconnect', () => {
     console.log(`user ${socket.id} disconnected`)
   })
