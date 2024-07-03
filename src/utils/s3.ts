@@ -2,7 +2,6 @@ import { S3 } from '@aws-sdk/client-s3'
 import { config } from 'dotenv'
 import { Upload } from '@aws-sdk/lib-storage'
 import fs from 'fs'
-import path from 'path'
 
 config()
 const s3 = new S3({
@@ -13,7 +12,7 @@ const s3 = new S3({
   }
 })
 
-export const uploadImageToS3 = ({
+export const uploadFileToS3 = ({
   fileName,
   filePath,
   contentType

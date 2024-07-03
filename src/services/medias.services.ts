@@ -13,7 +13,7 @@ import { IMedia } from '~/models/Other'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
 import databaseService from '~/services/database.services'
 import VideoStatus from '~/models/shcemas/VideoStatus.schema'
-import { uploadImageToS3 } from '~/utils/s3'
+import { uploadFileToS3 } from '~/utils/s3'
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
 
 config()
@@ -126,8 +126,8 @@ class MediasService {
         const newFileFullName = `${newNameImage}.jpeg`
         const newPath = path.resolve(UPLOADS_IMAGES_DIR, newFileFullName)
         await sharp(file.filepath).jpeg().toFile(newPath)
-        const s3Result = await uploadImageToS3({
-          fileName: newFileFullName,
+        const s3Result = await uploadFileToS3({
+          fileName: `images/${newFileFullName}`,
           filePath: newPath,
           contentType: mime.getType(newPath) as string
         })
@@ -152,6 +152,28 @@ class MediasService {
         type: EnumMediaType.Video
       }
     })
+
+    return result
+  }
+
+  async handleUploadVideoToS3(req: Request) {
+    const files = await handleUploadVideo(req)
+    const result: IMedia[] = await Promise.all(
+      files.map(async (file) => {
+        const s3Result = await uploadFileToS3({
+          fileName: `videos/${file.newFilename}`,
+          filePath: file.filepath,
+          contentType: 'video/mp4'
+        })
+        // await fsPromises.unlink(file.filepath)
+        const dirPath = path.dirname(file.filepath) // Get the directory path
+        await fsPromises.rm(dirPath, { recursive: true })
+        return {
+          url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+          type: EnumMediaType.Video
+        }
+      })
+    )
 
     return result
   }

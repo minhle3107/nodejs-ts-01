@@ -4,6 +4,7 @@ import {
   uploadImageToS3Controller,
   uploadVideoController,
   uploadVideoHLSController,
+  uploadVideoToS3Controller,
   videoStatusController
 } from '~/controllers/medias.controllers'
 import { wrapRequestsHandler } from '~/utils/handlers'
@@ -29,6 +30,13 @@ mediasRoutes.post(
   accessTokenValidator,
   verifiedUserValidator,
   wrapRequestsHandler(uploadVideoController)
+)
+
+mediasRoutes.post(
+  '/upload-video-to-s3',
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestsHandler(uploadVideoToS3Controller)
 )
 
 mediasRoutes.post(
