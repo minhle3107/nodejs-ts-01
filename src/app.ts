@@ -2,11 +2,13 @@ import express from 'express'
 import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import cors from 'cors'
 import v1Routes from '~/routes/v1'
+import { requestLoggerMiddleware } from '~/middlewares/logging.middleware'
 
 const app = express()
 app.use(cors())
 
 app.use(express.json())
+app.use(requestLoggerMiddleware)
 
 app.use('/api/v1', v1Routes)
 

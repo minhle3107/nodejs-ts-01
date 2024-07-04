@@ -2,6 +2,7 @@ import { existsSync, mkdirSync } from 'node:fs'
 import { Request } from 'express'
 import { File } from 'formidable'
 import {
+  LOGS_DIR,
   UPLOADS_IMAGES_DIR,
   UPLOADS_IMAGES_TEMPS_DIR,
   UPLOADS_VIDEOS_DIR,
@@ -12,7 +13,7 @@ import USERS_MESSAGES from '~/constants/messages'
 import path from 'node:path'
 
 export const initFolder = () => {
-  ;[UPLOADS_IMAGES_TEMPS_DIR, UPLOADS_VIDEOS_TEMPS_DIR].forEach((dir) => {
+  ;[LOGS_DIR, UPLOADS_IMAGES_TEMPS_DIR, UPLOADS_VIDEOS_TEMPS_DIR].forEach((dir) => {
     if (!existsSync(dir)) {
       mkdirSync(dir, { recursive: true })
     }
