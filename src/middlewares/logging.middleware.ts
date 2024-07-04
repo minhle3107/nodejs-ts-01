@@ -8,10 +8,13 @@ export const requestLoggerMiddleware = (req: Request, res: Response, next: NextF
 
   res.on('finish', () => {
     const [seconds, nanoseconds] = process.hrtime(startTime)
-    const responseTime = (seconds * 1000 + nanoseconds / 1e6).toFixed(2) // Chuyển đổi sang milliseconds
-    logger.info(
-      `${req.method} ${req.originalUrl} - Status: ${res.statusCode} - Response time: ${responseTime}ms - Client IP: ${clientIp} - User-Agent: ${userAgent}`
-    )
+    const responseTime = (seconds * 1000 + nanoseconds / 1e6).toFixed(2) // Convert to milliseconds
+
+    setImmediate(() => {
+      logger.info(
+        `${req.method} ${req.originalUrl} - Status: ${res.statusCode} - Response time: ${responseTime}ms - Client IP: ${clientIp} - User-Agent: ${userAgent}`
+      )
+    })
   })
 
   next()
