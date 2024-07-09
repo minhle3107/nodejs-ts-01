@@ -27,20 +27,19 @@ const io = new Server(httpServer, {
     origin: 'http://localhost:3000'
   }
 })
-
+const users: { [key: string]: { socket_id: string } } = {}
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`)
-
-  socket.emit('hi', {
-    message: 'Hello from server'
-  })
-
-  socket.on('hello', (data) => {
+  const user_id = socket.handshake.auth._id
+  users[user_id] = { socket_id: socket.id }
+  console.log(users)
+  socket.on('private message', (data) => {
     console.log(data)
   })
-
   socket.on('disconnect', () => {
+    delete users[user_id]
     console.log(`user ${socket.id} disconnected`)
+    console.log(users)
   })
 })
 httpServer.listen(PORT, () => console.log(`App listening on port ${PORT}`))
