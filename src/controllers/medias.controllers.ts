@@ -6,6 +6,7 @@ import path from 'node:path'
 import httpStatus from '~/constants/httpStatus'
 import fs from 'fs'
 import { getNameFromFullName } from '~/utils/file'
+import { sendFileFromS3 } from '~/utils/s3'
 
 export const uploadImageController = async (req: Request, res: Response) => {
   const urlImage = await mediasService.handleUploadImage(req)
@@ -92,20 +93,30 @@ export const serveVideoStreamVideoController = async (req: Request, res: Respons
   videoStream.pipe(res)
 }
 
+// export const serveM3U8Controller = async (req: Request, res: Response) => {
+//   const { id } = req.params
+//   return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, 'master.m3u8'), (err) => {
+//     if (err) {
+//       res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
+//     }
+//   })
+// }
+//
+// export const serveSegmentController = async (req: Request, res: Response) => {
+//   const { id, v, segment } = req.params
+//   return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, v, segment), (err) => {
+//     if (err) {
+//       res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
+//     }
+//   })
+// }
+
 export const serveM3U8Controller = async (req: Request, res: Response) => {
   const { id } = req.params
-  return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, 'master.m3u8'), (err) => {
-    if (err) {
-      res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
-    }
-  })
+  await sendFileFromS3(res, `videos-hls/${id}/master.m3u8`)
 }
 
 export const serveSegmentController = async (req: Request, res: Response) => {
   const { id, v, segment } = req.params
-  return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, v, segment), (err) => {
-    if (err) {
-      res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
-    }
-  })
+  await sendFileFromS3(res, `videos-hls/${id}/${v}/${segment}`)
 }
