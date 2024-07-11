@@ -141,12 +141,18 @@ class MediasService {
         const s3Result = await uploadFileToS3({
           fileName: `images/${newFileFullName}`,
           filePath: newPath,
-          contentType: mime.getType(newPath) as string
+          contentType: 'image/jpeg'
         })
 
         await Promise.all([fsPromises.unlink(file.filepath), fsPromises.unlink(newPath)])
+        // return {
+        //   url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+        //   type: EnumMediaType.Image
+        // }
         return {
-          url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+          url: isProduction
+            ? `${envConfig.host}/api/v1/static/image/${newNameImage}.jpeg`
+            : `http://localhost:${envConfig.port}/api/v1/static/image/${newNameImage}.jpeg`,
           type: EnumMediaType.Image
         }
       })
@@ -184,6 +190,12 @@ class MediasService {
           url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
           type: EnumMediaType.Video
         }
+        // return {
+        //   url: isProduction
+        //     ? `${envConfig.host}/api/v1/static/video-stream/${file.newFilename}`
+        //     : `http://localhost:${envConfig.port}/api/v1/static/video-stream/${file.newFilename}`,
+        //   type: EnumMediaType.Video
+        // }
       })
     )
 

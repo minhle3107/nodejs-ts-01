@@ -102,6 +102,24 @@ class DatabaseService {
   get likes(): Collection<Like> {
     return this.db.collection(envConfig.dbLikesCollection)
   }
+
+  async initializeDatabase() {
+    try {
+      await this.connect()
+      await Promise.all([
+        this.indexUsers(),
+        this.indexRefreshTokens(),
+        this.indexVideoStatus(),
+        this.indexFollowers(),
+        this.indexTweets()
+        // Include additional indexing methods as needed...
+      ])
+      console.log('Database initialized successfully')
+    } catch (error) {
+      console.error('Failed to initialize database:', error)
+      throw error
+    }
+  }
 }
 
 const databaseService = new DatabaseService()

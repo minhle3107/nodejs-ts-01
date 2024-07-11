@@ -1,5 +1,7 @@
 import minimist from 'minimist'
 import { config } from 'dotenv'
+import { CorsOptions } from 'cors'
+import { rateLimit } from 'express-rate-limit'
 
 const args = minimist(process.argv.slice(2))
 const environment = args.env || 'development'
@@ -45,4 +47,16 @@ export const envConfig = {
   awsRegion: process.env.AWS_REGION as string,
   awsBucketName: process.env.AWS_BUCKET_NAME as string,
   sesFromAddress: process.env.SES_FROM_ADDRESS as string
+}
+
+export const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers.
+  // store: ... , // Redis, Memcached, etc. See below.
+})
+
+export const corsOptions: CorsOptions = {
+  origin: isProduction ? envConfig.clientUrl : '*'
 }

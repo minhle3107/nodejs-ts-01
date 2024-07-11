@@ -24,13 +24,18 @@ export const uploadImageToS3Controller = async (req: Request, res: Response) => 
   })
 }
 
+// export const serveImagesController = async (req: Request, res: Response) => {
+//   const { name } = req.params
+//   return res.sendFile(path.resolve(UPLOADS_IMAGES_DIR, name), (err) => {
+//     if (err) {
+//       res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.IMAGE_NOT_FOUND)
+//     }
+//   })
+// }
+
 export const serveImagesController = async (req: Request, res: Response) => {
   const { name } = req.params
-  return res.sendFile(path.resolve(UPLOADS_IMAGES_DIR, name), (err) => {
-    if (err) {
-      res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.IMAGE_NOT_FOUND)
-    }
-  })
+  await sendFileFromS3(res, `images/${name}`)
 }
 
 export const uploadVideoController = async (req: Request, res: Response) => {
@@ -92,6 +97,21 @@ export const serveVideoStreamVideoController = async (req: Request, res: Respons
   const videoStream = fs.createReadStream(pathVideo, { start, end })
   videoStream.pipe(res)
 }
+
+// export const serveVideoStreamVideoController = async (req: Request, res: Response) => {
+//   const range = req.headers.range
+//   console.log('range', range)
+//   if (!range) {
+//     return res.status(httpStatus.BAD_REQUEST).send(USERS_MESSAGES.INVALID_RANGE)
+//   }
+//
+//   const { name } = req.params
+//   console.log('name', name)
+//   const filepath = `videos/${name}` // Đường dẫn tới video trên S3
+//
+//   // Gọi sendFileFromS3 với filepath. Lưu ý: sendFileFromS3 cần được cập nhật để hỗ trợ Range requests
+//   await sendFileFromS3(res, filepath, range)
+// }
 
 // export const serveM3U8Controller = async (req: Request, res: Response) => {
 //   const { id } = req.params
