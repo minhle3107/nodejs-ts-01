@@ -1,11 +1,16 @@
-import argv from 'minimist'
+import minimist from 'minimist'
 import { config } from 'dotenv'
-import process from 'node:process'
 
-config()
+const args = minimist(process.argv.slice(2))
+const environment = args.env || 'development'
+const envFilePath = environment === 'development' ? '.env' : `.env.${environment}`
 
-const options = argv(process.argv.slice(2))
-export const isProduction = Boolean(options.production)
+config({ path: envFilePath })
+
+console.log('Environment:', environment)
+
+export const isProduction = environment === 'production'
+console.log('isProduction:', isProduction)
 
 export const envConfig = {
   port: (process.env.PORT as string) || 4000,
