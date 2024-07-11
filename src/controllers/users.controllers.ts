@@ -24,6 +24,7 @@ import databaseService from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { EnumUserVerifyStatus } from '~/constants/enums'
 import * as process from 'node:process'
+import { envConfig } from '~/constants/config'
 
 export const loginController = async (req: Request<ParamsDictionary, any, ILoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -38,7 +39,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, ILogin
 export const oauthGoogleController = async (req: Request, res: Response) => {
   const { code } = req.query
   const result = await usersServices.oauthGoogle(code as string)
-  const urlRedirect = `${process.env.CLIENT_REDIRECT_URI}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify_status=${result.verify_status}`
+  const urlRedirect = `${envConfig.clientRedirectUri}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify_status=${result.verify_status}`
   return res.redirect(urlRedirect)
 }
 

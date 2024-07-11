@@ -5,9 +5,7 @@ import { UPLOADS_IMAGES_DIR, UPLOADS_VIDEOS_DIR } from '~/constants/dir'
 import path from 'node:path'
 import fs from 'fs'
 import fsPromises from 'fs/promises'
-import { config } from 'dotenv'
-import { isProduction } from '~/constants/config'
-import * as process from 'node:process'
+import { envConfig, isProduction } from '~/constants/config'
 import { EnumEncodingStatus, EnumMediaType } from '~/constants/enums'
 import { IMedia } from '~/models/Other'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
@@ -16,8 +14,6 @@ import VideoStatus from '~/models/shcemas/VideoStatus.schema'
 import { uploadFileToS3 } from '~/utils/s3'
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
 import { rimrafSync } from 'rimraf'
-
-config()
 
 class Queue {
   items: string[]
@@ -124,8 +120,8 @@ class MediasService {
         fs.unlinkSync(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/api/v1/static/image/${newNameImage}.jpeg`
-            : `http://localhost:${process.env.PORT}/api/v1/static/image/${newNameImage}.jpeg`,
+            ? `${envConfig.host}/api/v1/static/image/${newNameImage}.jpeg`
+            : `http://localhost:${envConfig.port}/api/v1/static/image/${newNameImage}.jpeg`,
           type: EnumMediaType.Image
         }
       })
@@ -163,8 +159,8 @@ class MediasService {
     const result: IMedia[] = files.map((file) => {
       return {
         url: isProduction
-          ? `${process.env.HOST}/api/v1/static/video-stream/${file.newFilename}`
-          : `http://localhost:${process.env.PORT}/api/v1/static/video-stream/${file.newFilename}`,
+          ? `${envConfig.host}/api/v1/static/video-stream/${file.newFilename}`
+          : `http://localhost:${envConfig.port}/api/v1/static/video-stream/${file.newFilename}`,
         type: EnumMediaType.Video
       }
     })
@@ -202,8 +198,8 @@ class MediasService {
         await queue.enqueue(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/api/v1/static/video-hls/${folderVideo}/master.m3u8`
-            : `http://localhost:${process.env.PORT}/api/v1/static/video-hls/${folderVideo}/master.m3u8`,
+            ? `${envConfig.host}/api/v1/static/video-hls/${folderVideo}/master.m3u8`
+            : `http://localhost:${envConfig.port}/api/v1/static/video-hls/${folderVideo}/master.m3u8`,
           type: EnumMediaType.HLS
         }
       })

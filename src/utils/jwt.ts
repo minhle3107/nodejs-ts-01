@@ -1,9 +1,5 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
-import * as process from 'process'
-import { config } from 'dotenv'
 import { ITokenPayload } from '~/models/requests/User.requests'
-
-config()
 
 export const handleSignToken = ({
   payload,
