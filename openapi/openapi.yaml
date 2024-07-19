@@ -1,0 +1,144 @@
+openapi: 3.0.0
+info:
+  title: Twitter Clone - 2024
+  description: API documentation example
+  version: 1.0.0
+servers:
+  - url: 'https://api.minhle3107.site/api/v1'
+  - url: 'http://localhost:4000/api/v1'
+tags:
+  - name: auth
+    description: Operations about authentication
+  - name: users
+    description: Operations about user
+  - name: medias
+    description: Operations about media
+  - name: likes
+    description: Operations about like
+  - name: tweets
+    description: Operations about tweet
+  - name: search
+    description: Operations about search
+  - name: conversations
+    description: Operations about conversation
+
+paths:
+  /users/login:
+    post:
+      tags:
+        - auth
+      summary: Login user
+      description: Login user
+      operationId: loginUser
+      requestBody:
+        description: Login user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: minhlxph30963+1@fpt.edu.vn
+                password:
+                  type: string
+                  example: 'Admin@123'
+      responses:
+        '200':
+          description: Return access token and refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+components:
+  schemas:
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Login successfully
+        result:
+          type: object
+          properties:
+            access_token:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjY4MmNiZDU1YTg3ZWMzZmRiMDZjZDc2IiwidG9rZW5fdHlwZSI6MCwidmVyaWZ5X3N0YXR1cyI6MSwiaWF0IjoxNzIxNDE2MjAyLCJleHAiOjE3MjE0MTcxMDJ9.skWl0pIBiFxhXFszU1IPnPbxRHUFBIAsEx63shY4aHA"
+            refresh_token:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjY4MmNiZDU1YTg3ZWMzZmRiMDZjZDc2IiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5X3N0YXR1cyI6MSwiaWF0IjoxNzIxNDE2MjAyLCJleHAiOjE3MzAwNTYyMDJ9.Xfwl3B9ySKbKFFIYIGQ5kSVhI3KxgvwZdZINOX2U-O4"
+    ValidationErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error
+        errors:
+          type: object
+          properties:
+            password:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: field
+                value:
+                  type: string
+                msg:
+                  type: string
+                  example: Password is required
+                path:
+                  type: string
+                  example: password
+                location:
+                  type: string
+                  example: body
+            email:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: field
+                value:
+                  type: string
+                  example: minhlxph30963+2@fpt.edu.vn
+                msg:
+                  type: string
+                  example: Email or password is incorrect
+                path:
+                  type: string
+                  example: email
+                location:
+                  type: string
+                  example: body
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
