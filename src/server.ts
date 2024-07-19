@@ -14,6 +14,7 @@ import swaggerUi from 'swagger-ui-express'
 import v1Routes from '~/routes/v1'
 import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import Conversation from '~/models/shcemas/Conversations.schema'
+import { ObjectId } from 'mongodb'
 
 async function startServer() {
   try {
@@ -45,7 +46,7 @@ async function startServer() {
 
       console.log(users)
 
-      socket.on('private message', async (data) => {
+      socket.on('send_message', async (data) => {
         const receiver_socket_id = users[data.to]?.socket_id
         console.log(receiver_socket_id)
         if (!receiver_socket_id) {
@@ -54,13 +55,13 @@ async function startServer() {
 
         await databaseService.conversations.insertOne(
           new Conversation({
-            sender_id: data.from,
-            receiver_id: data.to,
+            sender_id: new ObjectId(data.from),
+            receiver_id: new ObjectId(data.to),
             content: data.content
           })
         )
 
-        socket.to(receiver_socket_id).emit('receive private message', {
+        socket.to(receiver_socket_id).emit('receive_private_message', {
           content: data.content,
           from: user_id
         })
