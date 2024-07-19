@@ -155,9 +155,8 @@ class UsersService {
      * 3. API verify email sẽ kiểm tra token và update trạng thái verify_status của user thành Verified
      * 4. Sau khi verify email thành công thì trả về access_token và refresh_token
      */
-    // console.log('email_verify_token', email_verify_token)
-
-    await sendVerifyRegisterEmail(payload.email, email_verify_token)
+    console.log('email_verify_token', email_verify_token)
+    // await sendVerifyRegisterEmail(payload.email, email_verify_token)
     return { access_token, refresh_token }
   }
 

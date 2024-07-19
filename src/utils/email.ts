@@ -66,7 +66,7 @@ const sendVerifyEmail = (toAddress: string, subject: string, body: string) => {
   return sesClient.send(sendEmailCommand)
 }
 
-export const sendVerifyRegisterEmail = (
+export const sendVerifyRegisterEmail = async (
   toAddress: string,
   email_verify_token: string,
   template: string = verifyEmailTemplate

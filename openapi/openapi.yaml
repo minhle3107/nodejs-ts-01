@@ -55,7 +55,340 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
+                $ref: '#/components/schemas/ValidationErrorLoginResponse'
+  /users/register:
+    post:
+      tags:
+        - auth
+      summary: Register user
+      description: Register user
+      operationId: registerUser
+      requestBody:
+        description: Register user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Return access token and refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorRegisterResponse'
+  /users/verify-email:
+    post:
+      tags:
+        - auth
+      summary: Verify email
+      description: Verify email
+      operationId: verifyEmail
+      requestBody:
+        description: Verify email
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_verify_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjY4MmNiZDU1YTg3ZWMzZmRiMDZjZDc2IiwidG9rZW5fdHlwZSI6MywidmVyaWZ5X3N0YXR1cyI6MCwiaWF0IjoxNzE5ODQ3ODkzLCJleHAiOjE3MjA0NTI2OTN9.8FPxF7GiD_IdriOP3KcgK4W3ZJKb2YLYhXAS26kTJ-w'
+      responses:
+        '200':
+          description: Return access token and refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /users/resend-verify-email:
+    post:
+      tags:
+        - auth
+      summary: Resend verify email
+      description: Resend verification email to the user. This endpoint does not require a request body but needs an authorization token.
+      operationId: resendVerifyEmail
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Verification email resent successfully.
+        '400':
+          description: Bad request, possibly due to missing or invalid token.
+        '401':
+          description: Unauthorized, if the access token is missing or invalid.
+  /users/forgot-password:
+    post:
+      tags:
+        - auth
+      summary: Forgot password
+      description: Forgot password
+      operationId: forgotPassword
+      responses:
+        '200':
+          description: Return access token and refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotFoundError'
+      requestBody:
+        description: Forgot password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: minh@gmail.com
+  /users/reset-password:
+    post:
+      tags:
+        - auth
+      summary: Reset password
+      description: Reset password
+      operationId: resetPassword
+      requestBody:
+        description: Forgot password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYxZTQxNTRkMmI1MTcwMjg3NjFmZDY4IiwidG9rZW5fdHlwZSI6MiwiaWF0IjoxNzEzMzQ3MzI4LCJleHAiOjE3MTM5NTIxMjh9.SI6-fq8_lastgHZKGDh9-yOfeobx-ZDOilu3Lv6xuQ4"
+                password:
+                  type: string
+                  example: 'Admin@123'
+                confirm_password:
+                  type: string
+                  example: 'Admin@123'
+      responses:
+        '200':
+          description: Return access token and refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /users/change-password:
+    put:
+      tags:
+        - auth
+      summary: Change password
+      description: Change password request
+      requestBody:
+        description: Change password request
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                  example: "Admin@1234"
+                password:
+                  type: string
+                  example: "Admin@123"
+                confirm_password:
+                  type: string
+                  example: "Admin@123"
+      responses:
+        '200':
+          description: Return access token and refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+
+  /users/refresh-token:
+    post:
+      tags:
+        - users
+      summary: Refresh token
+      description: Refresh token
+      operationId: refreshToken
+      requestBody:
+        description: Refresh token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjY4MmNiZDU1YTg3ZWMzZmRiMDZjZDc2IiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5X3N0YXR1cyI6MSwiaWF0IjoxNzIxNDE2MjAyLCJleHAiOjE3MzAwNTYyMDJ9.Xfwl3B9ySKbKFFIYIGQ5kSVhI3KxgvwZdZINOX2U-O4"
+      responses:
+        '200':
+          description: Return access token and refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Get user profile
+      description: Get user profile
+      operationId: getUserProfile
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Return user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /users/{username}:
+    get:
+      tags:
+        - users
+      summary: Get user profile
+      description: Retrieve the profile of a user by their username.
+      operationId: getUserProfileByUsername
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username of the user to retrieve profile for.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved user profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found.
+  /users/follow:
+    post:
+      tags:
+        - users
+      summary: Follow user
+      description: Follow user
+      operationId: followUser
+      requestBody:
+        description: Follow user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followed_user_id:
+                  type: string
+                  example: "6682cbd55a87ec3fdb06cd76"
+      responses:
+        '200':
+          description: Follow user successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Follow user successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /users/unfollow/{user_id}:
+    delete:
+      tags:
+        - users
+      summary: Unfollow user
+      description: Unfollow user
+      operationId: unfollowUser
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User id of the user to unfollow.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Unfollow user successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Unfollow user successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+
+  
+
+
+
+
 
 components:
   schemas:
@@ -74,7 +407,7 @@ components:
             refresh_token:
               type: string
               example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjY4MmNiZDU1YTg3ZWMzZmRiMDZjZDc2IiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5X3N0YXR1cyI6MSwiaWF0IjoxNzIxNDE2MjAyLCJleHAiOjE3MzAwNTYyMDJ9.Xfwl3B9ySKbKFFIYIGQ5kSVhI3KxgvwZdZINOX2U-O4"
-    ValidationErrorResponse:
+    ValidationErrorLoginResponse:
       type: object
       properties:
         message:
@@ -118,25 +451,217 @@ components:
                 location:
                   type: string
                   example: body
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - date_of_birth
+        - password
+        - confirm_password
+      properties:
+        name:
+          type: string
+          example: Minh Lê
+        email:
+          type: string
+          format: email
+          example: minhlxph30963+5@fpt.edu.vn
+        date_of_birth:
+          type: string
+          format: date-time
+          example: 1997-07-31T02:58:27Z
+        password:
+          type: string
+          format: password
+          example: Admin@123
+        confirm_password:
+          type: string
+          format: password
+          example: Admin@123
+    ValidationErrorRegisterResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error
+        errors:
+          type: object
+          properties:
+            date_of_birth:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: field
+                value:
+                  type: string
+                msg:
+                  type: string
+                  example: Date of birth must be a valid ISO8601
+                path:
+                  type: string
+                  example: date_of_birth
+                location:
+                  type: string
+                  example: body
+            name:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: field
+                value:
+                  type: string
+                msg:
+                  type: string
+                  example: Name must be between 2 and 255 characters
+                path:
+                  type: string
+                  example: name
+                location:
+                  type: string
+                  example: body
+            password:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: field
+                value:
+                  type: string
+                msg:
+                  type: string
+                  example: Password must be at least 6 characters long and less than 50 characters
+                path:
+                  type: string
+                  example: password
+                location:
+                  type: string
+                  example: body
+            confirm_password:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: field
+                value:
+                  type: string
+                msg:
+                  type: string
+                  example: Passwords do not match
+                path:
+                  type: string
+                  example: confirm_password
+                location:
+                  type: string
+                  example: body
+            email:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: field
+                value:
+                  type: string
+                msg:
+                  type: string
+                  example: Email already exists
+                path:
+                  type: string
+                  example: email
+                location:
+                  type: string
+                  example: body
+    JwtExpired:
+      type: object
+      properties:
+        message:
+          type: string
+          example: JWT expired
+    UserNotFoundError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error
+        errors:
+          type: object
+          properties:
+            email:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: field
+                value:
+                  type: string
+                  example: minh@gmail.com
+                msg:
+                  type: string
+                  example: User not found
+                path:
+                  type: string
+                  example: email
+                location:
+                  type: string
+                  example: body
     User:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        username:
+        message:
           type: string
-          example: theUser
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: James
-        email:
-          type: string
-          example:
+          example: Get profile successfully
+        result:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: 6682cbd55a87ec3fdb06cd76
+            name:
+              type: string
+              example: Minh Lê
+            date_of_birth:
+              type: string
+              format: date-time
+              example: 1997-07-31T02:58:27.000Z
+            email:
+              type: string
+              format: email
+              example: minhlxph30963+2@fpt.edu.vn
+            created_at:
+              type: string
+              format: date-time
+              example: 2024-07-01T15:31:33.085Z
+            updated_at:
+              type: string
+              format: date-time
+              example: 2024-07-04T07:52:00.035Z
+            verify_status:
+              type: integer
+              example: 1
+            twitter_circle:
+              type: array
+              items: { }
+              example: [ ]
+            bio:
+              type: string
+              example: ""
+            location:
+              type: string
+              example: ""
+            website:
+              type: string
+              example: ""
+            username:
+              type: string
+              example: user6682cbd55a87ec3fdb06cd76
+            avatar:
+              type: string
+              example: ""
+            cover_photo:
+              type: string
+              example: ""
   securitySchemes:
     bearerAuth:
       type: http
