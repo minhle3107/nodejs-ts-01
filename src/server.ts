@@ -46,7 +46,7 @@ async function startServer() {
 
       console.log(users)
 
-      socket.on('private message', async (data) => {
+      socket.on('send_message', async (data) => {
         const receiver_socket_id = users[data.to]?.socket_id
         console.log(receiver_socket_id)
         if (!receiver_socket_id) {
@@ -61,7 +61,7 @@ async function startServer() {
           })
         )
 
-        socket.to(receiver_socket_id).emit('receive private message', {
+        socket.to(receiver_socket_id).emit('receive_private_message', {
           content: data.content,
           from: user_id
         })
