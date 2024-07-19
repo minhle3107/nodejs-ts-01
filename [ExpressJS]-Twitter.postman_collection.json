@@ -1,0 +1,1338 @@
+{
+	"info": {
+		"_postman_id": "4f598d5a-9bdb-4896-a873-e1f4a4168603",
+		"name": "[ExpressJS] - Twitter",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33539630"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Refresh token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Refresh token thành công\", () => {",
+									"    pm.response.to.have.status(200)",
+									"    const responseJson = pm.response.json()",
+									"    const {access_token, refresh_token} = responseJson.result",
+									"    pm.environment.set('access_token', access_token)",
+									"    pm.environment.set('refresh_token', refresh_token)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/refresh-token",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get me",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/me",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get profile by username",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/minhle_3107",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"minhle_3107"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Follow user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"followed_user_id\": \"662236849ed35305301118c4\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/follow",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfollow user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/unfollow/662617a3ad5ba3df05bf3a4c",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"unfollow",
+								"662617a3ad5ba3df05bf3a4c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update me",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"minhle_04\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/me",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{access_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Medias",
+			"item": [
+				{
+					"name": "Upload image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/private/var/folders/yp/zppm9gvn2b5_z6wctvxbhst40000gn/T/com.apple.Photos.NSItemProvider/uuid=457C52E9-93D1-4CDC-B367-B41A92B96563&library=1&type=1&mode=2&loc=true&cap=true.jpeg/IMG_1833.jpeg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/medias/upload-image",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"medias",
+								"upload-image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload image to S3",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "postman-cloud:///1ef02e76-bf98-43f0-890b-2c566c1fff5c"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/medias/upload-image-to-s3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"medias",
+								"upload-image-to-s3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Serve image Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/Users/minhle_3107/Downloads/record_02.mp4",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/static/image/3f7c2ed6e57ff3a476c533f00.jpeg",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"static",
+								"image",
+								"3f7c2ed6e57ff3a476c533f00.jpeg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload video",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "postman-cloud:///1ef02de2-e270-4880-bc9a-83c4d69e9c1e"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/medias/upload-video",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"medias",
+								"upload-video"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload video to s3",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "postman-cloud:///1ef02de2-e270-4880-bc9a-83c4d69e9c1e"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/medias/upload-video-to-s3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"medias",
+								"upload-video-to-s3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Serve video",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/Users/minhle_3107/Downloads/record_02.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/static/video-stream/Kjd9N6QHskUDlQikGDBJT.mp4",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"static",
+								"video-stream",
+								"Kjd9N6QHskUDlQikGDBJT.mp4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload video HLS",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "postman-cloud:///1ef02de2-e270-4880-bc9a-83c4d69e9c1e"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/medias/upload-video-hls",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"medias",
+								"upload-video-hls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Serve m3u8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/Users/minhle_3107/Downloads/record_02.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/static/video-hls/1KM9RcX60_IVOkL0K3-1R/master.m3u8",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"static",
+								"video-hls",
+								"1KM9RcX60_IVOkL0K3-1R",
+								"master.m3u8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Serve segment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/Users/minhle_3107/Downloads/record_02.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/static/video-hls/1KM9RcX60_IVOkL0K3-1R/v0/fileSequence0.ts",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"static",
+								"video-hls",
+								"1KM9RcX60_IVOkL0K3-1R",
+								"v0",
+								"fileSequence0.ts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get video status",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/Users/minhle_3107/Downloads/record_02.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/medias/video-status/NV17mV8Q8kLGCPh0jY4Yi/master",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"medias",
+								"video-status",
+								"NV17mV8Q8kLGCPh0jY4Yi",
+								"master"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tweets",
+			"item": [
+				{
+					"name": "Create Tweet",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": 0,\n    \"audience\": 0, // Chỉ ngững người nằm trong circle mới xem được tweet\n    \"parent_id\": null,\n    \"content\": \"Minh Le\",\n    \"hashtags\": [],\n    \"mentions\": [],\n    \"medias\": [\n        {\n            \"type\": 1,\n            \"url\": \"https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/tweets",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"tweets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tweet",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/tweets/6671417a2adb528d76cd29ec",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"tweets",
+								"6671417a2adb528d76cd29ec"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get new feeds",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/tweets/?limit=50&page=1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"tweets",
+								""
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get comments",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/tweets/6671417a2adb528d76cd29ec/children?page=1&limit=5&tweet_type=2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"tweets",
+								"6671417a2adb528d76cd29ec",
+								"children"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "tweet_type",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Logout thành công và gán token thành rỗng\", () => {",
+									"    pm.response.to.have.status(200) // Giả định rằng API logout trả về status 200 khi thành công",
+									"",
+									"    // Gán giá trị của access_token và refresh_token thành rỗng",
+									"    pm.environment.set('access_token', \"\");",
+									"    pm.environment.set('refresh_token', \"\");",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/logout",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Login thành công\", () => {",
+									"    pm.response.to.have.status(200)",
+									"    const responseJson = pm.response.json()",
+									"    const {access_token, refresh_token} = responseJson.result",
+									"    pm.environment.set('access_token', access_token)",
+									"    pm.environment.set('refresh_token', refresh_token)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Register thành công\", () => {",
+									"    pm.response.to.have.status(200)",
+									"    const responseJson = pm.response.json()",
+									"    const {access_token, refresh_token} = responseJson.result",
+									"    pm.environment.set('access_token', access_token)",
+									"    pm.environment.set('refresh_token', refresh_token)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Minh Lê\",\n    \"email\": \"minhlxph30963+5@fpt.edu.vn\",\n    \"date_of_birth\": \"1997-07-31T02:58:27Z\",\n    \"password\": \"Admin@123\",\n    \"confirm_password\": \"Admin@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/register",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify email thành công\", () => {",
+									"    pm.response.to.have.status(200)",
+									"    const responseJson = pm.response.json()",
+									"    const {access_token, refresh_token} = responseJson.result",
+									"    pm.environment.set('access_token', access_token)",
+									"    pm.environment.set('refresh_token', refresh_token)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_verify_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjY4MmNiZDU1YTg3ZWMzZmRiMDZjZDc2IiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5X3N0YXR1cyI6MSwiaWF0IjoxNzIxNDI4NTgzLCJleHAiOjE3MzAwNjg1ODN9.s8_aIO2zWjlRan1uWIEUm4qO47MhsAb-a3lZPr9I-Ik\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/verify-email",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"verify-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend verify email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/resend-verify-email",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"resend-verify-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // \"email\": \"{{email}}\",\n    \"email\": \"minhlxph30963+5@fpt.edu.vn\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/forgot-password",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify forgot password  token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"forgot_password_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYxZTQxNTRkMmI1MTcwMjg3NjFmZDY4IiwidG9rZW5fdHlwZSI6MiwiaWF0IjoxNzEzMzQ0MjUzLCJleHAiOjE3MTM5NDkwNTN9.bORSezR5I6f87MvjJijQA1HXSsKspQs6bJjLS-FY--M\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/verify-forgot-password-token",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"verify-forgot-password-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"forgot_password_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYxZTQxNTRkMmI1MTcwMjg3NjFmZDY4IiwidG9rZW5fdHlwZSI6MiwiaWF0IjoxNzEzMzQ3MzI4LCJleHAiOjE3MTM5NTIxMjh9.SI6-fq8_lastgHZKGDh9-yOfeobx-ZDOilu3Lv6xuQ4\",\n    \"password\": \"Admin@123\",\n    \"confirm_password\": \"Admin@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/reset-password",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\": \"Admin@1234\",\n    \"password\": \"Admin@123\",\n    \"confirm_password\": \"Admin@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/users/change-password",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"users",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bookmarks",
+			"item": [
+				{
+					"name": "Bookmark Tweet",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tweet_id\": \"666e6907f2700de7ca56be6b\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/bookmarks/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"bookmarks",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unBookmark Tweet",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tweet_id\": \"666a876966d35c1112cba3ba\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/bookmarks/tweet/666a876966d35c1112cba3ba",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"bookmarks",
+								"tweet",
+								"666a876966d35c1112cba3ba"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unBookmark Tweet by Bookmark Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tweet_id\": \"666a876966d35c1112cba3ba\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/bookmarks/666a9d75b16085b24e1d0121",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"bookmarks",
+								"666a9d75b16085b24e1d0121"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Likes",
+			"item": [
+				{
+					"name": "Like tweet",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tweet_id\": \"666e6907f2700de7ca56be6b\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/likes/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"likes",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "un Like tweet",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/{{v1}}/likes/tweet/666bd5278f3597b6845d2a3e",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"likes",
+								"tweet",
+								"666bd5278f3597b6845d2a3e"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Search",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const params = pm.request.url.query.all();",
+									"const contentParam = params.find(param => param.key === 'content');",
+									"",
+									"if (contentParam) {",
+									"  const encodedContent = encodeURIComponent(contentParam.value);",
+									"  pm.request.url.query.remove('content');",
+									"  pm.request.url.query.add({ key: 'content', value: encodedContent });",
+									"}",
+									"",
+									"console.log(pm.request.url.query.all());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/{{v1}}/search?content=Minh le&limit=10&page=1&media_type=video&people_follow=0",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{v1}}",
+								"search"
+							],
+							"query": [
+								{
+									"key": "content",
+									"value": "Minh le"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "media_type",
+									"value": "video"
+								},
+								{
+									"key": "people_follow",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Coversations",
+			"item": [
+				{
+					"name": "Get conversation by receiver_id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
