@@ -137,3 +137,7 @@ export const SEARCHES_MESSAGES = {
   MEDIA_TYPE_MUST_BE_ONE_OF: 'Media type must be one of',
   PEOPLE_MUST_BE_ONE_OF: 'People must be one of'
 } as const
+
+export const CONVERSATIONS_MESSAGES = {
+  GET_CONVERSATIONS_SUCCESS: 'Get conversations successfully'
+} as const

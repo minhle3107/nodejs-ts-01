@@ -14,6 +14,7 @@ import swaggerUi from 'swagger-ui-express'
 import v1Routes from '~/routes/v1'
 import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import Conversation from '~/models/shcemas/Conversations.schema'
+import { ObjectId } from 'mongodb'
 
 async function startServer() {
   try {
@@ -54,8 +55,8 @@ async function startServer() {
 
         await databaseService.conversations.insertOne(
           new Conversation({
-            sender_id: data.from,
-            receiver_id: data.to,
+            sender_id: new ObjectId(data.from),
+            receiver_id: new ObjectId(data.to),
             content: data.content
           })
         )

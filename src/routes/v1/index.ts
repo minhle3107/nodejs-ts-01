@@ -8,6 +8,7 @@ import likesRoutes from '~/routes/v1/likes.routes'
 import searchRoutes from '~/routes/v1/search.routes'
 import { UPLOADS_VIDEOS_DIR } from '~/constants/dir'
 import { apiLimiter } from '~/constants/config'
+import conversationsRouter from '~/routes/v1/conversations.routes'
 
 const v1Routes = express.Router()
 
@@ -18,6 +19,7 @@ v1Routes.use('/tweets', tweetsRoutes)
 v1Routes.use('/bookmarks', bookmarksRoutes)
 v1Routes.use('/likes', likesRoutes)
 v1Routes.use('/search', searchRoutes)
+v1Routes.use('/conversations', conversationsRouter)
 v1Routes.use('/static/video', express.static(UPLOADS_VIDEOS_DIR))
 
 export default v1Routes
