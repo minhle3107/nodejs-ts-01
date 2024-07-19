@@ -68,5 +68,6 @@ export const apiLimiter = rateLimit({
 })
 
 export const corsOptions: CorsOptions = {
-  origin: isDevelopment ? '*' : envConfig.clientUrl
+  // origin: isDevelopment ? '*' : envConfig.clientUrl
+  origin: '*'
 }
