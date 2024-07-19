@@ -14,6 +14,7 @@ import { ObjectId } from 'mongodb'
 import { ITokenPayload } from '~/models/requests/User.requests'
 import { EnumUserVerifyStatus } from '~/constants/enums'
 import { REGEX_USERNAME } from '~/constants/regex'
+import { envConfig } from '~/constants/config'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -78,7 +79,7 @@ const forgotPasswordTokenSchema: ParamSchema = {
       try {
         const decoded_forgot_password_token = await verifyToken({
           token: value,
-          secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+          secretOrPublicKey: envConfig.jwtSecretForgotPasswordToken
         })
         const { user_id } = decoded_forgot_password_token
         const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
@@ -260,7 +261,7 @@ export const accessTokenValidator = validate(
             try {
               ;(req as Request).decoded_authorization = await verifyToken({
                 token: access_token,
-                secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
+                secretOrPublicKey: envConfig.jwtSecretAccessToken
               })
             } catch (error) {
               if (error instanceof JsonWebTokenError) {
@@ -295,7 +296,7 @@ export const refreshTokenValidator = validate(
             }
             try {
               const [decoded_refresh_token, refresh_token] = await Promise.all([
-                verifyToken({ token: value, secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string }),
+                verifyToken({ token: value, secretOrPublicKey: envConfig.jwtSecretRefreshToken }),
                 databaseService.refreshTokens.findOne({ token: value })
               ])
               if (refresh_token === null) {
@@ -339,7 +340,7 @@ export const emailVerifyTokenValidator = validate(
             try {
               ;(req as Request).decoded_email_verify_token = await verifyToken({
                 token: value,
-                secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+                secretOrPublicKey: envConfig.jwtSecretEmailVerifyToken
               })
             } catch (error) {
               if (error instanceof JsonWebTokenError) {
@@ -506,6 +507,15 @@ export const followValidator = validate(
       followed_user_id: userIdSchema
     },
     ['body']
+  )
+)
+
+export const getConversationsValidator = validate(
+  checkSchema(
+    {
+      receiver_id: userIdSchema
+    },
+    ['params']
   )
 )
 

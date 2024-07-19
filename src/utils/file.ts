@@ -1,18 +1,13 @@
 import { existsSync, mkdirSync } from 'node:fs'
 import { Request } from 'express'
 import { File } from 'formidable'
-import {
-  UPLOADS_IMAGES_DIR,
-  UPLOADS_IMAGES_TEMPS_DIR,
-  UPLOADS_VIDEOS_DIR,
-  UPLOADS_VIDEOS_TEMPS_DIR
-} from '~/constants/dir'
+import { LOGS_DIR, UPLOADS_IMAGES_TEMPS_DIR, UPLOADS_VIDEOS_DIR, UPLOADS_VIDEOS_TEMPS_DIR } from '~/constants/dir'
 import fs from 'fs'
 import USERS_MESSAGES from '~/constants/messages'
 import path from 'node:path'
 
-export const initFolder = () => {
-  ;[UPLOADS_IMAGES_TEMPS_DIR, UPLOADS_VIDEOS_TEMPS_DIR].forEach((dir) => {
+export const initFolder = async () => {
+  ;[LOGS_DIR, UPLOADS_IMAGES_TEMPS_DIR, UPLOADS_VIDEOS_TEMPS_DIR].forEach((dir) => {
     if (!existsSync(dir)) {
       mkdirSync(dir, { recursive: true })
     }
@@ -147,4 +142,19 @@ export const getNameFromFullName = (fullName: string) => {
 
 export const getExtensionFromFullName = (fullName: string) => {
   return fullName.slice(fullName.lastIndexOf('.'))
+}
+
+export const getFiles = (dir: string, files: string[] = []) => {
+  const fileList = fs.readdirSync(dir)
+
+  for (const file of fileList) {
+    const name = `${dir}/${file}`
+
+    if (fs.statSync(name).isDirectory()) {
+      getFiles(name, files)
+    } else {
+      files.push(name)
+    }
+  }
+  return files
 }

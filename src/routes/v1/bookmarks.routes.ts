@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import express from 'express'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestsHandler } from '~/utils/handlers'
 import {
@@ -8,7 +8,7 @@ import {
 } from '~/controllers/bookmarks.controllers'
 import { tweetIdValidator } from '~/middlewares/tweets.middlewares'
 
-const bookmarksRoutes = Router()
+const bookmarksRoutes = express.Router()
 
 /**
  * Description: Bookmark a tweet

@@ -17,6 +17,16 @@ export enum EnumMediaType {
   HLS
 }
 
+export enum EnumMediaTypeQuery {
+  Image = 'image',
+  Video = 'video'
+}
+
+export enum EnumPeopleFollow {
+  Anyone = '0',
+  Following = '1'
+}
+
 export enum EnumEncodingStatus {
   Pending, // Đang chờ ở hàng đợi (chưa xử lý)
   Processing, // Đang xử lý

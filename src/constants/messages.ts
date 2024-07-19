@@ -130,5 +130,14 @@ export const LIKES_MESSAGES = {
 } as const
 
 export const SEARCHES_MESSAGES = {
-  SEARCH_SUCCESS: 'Search successfully'
+  SEARCH_SUCCESS: 'Search successfully',
+  NO_RESULT: 'No result',
+  CONTENT_MUST_BE_A_STRING: 'Content must be a string',
+  CONTENT_IS_REQUIRED: 'Content is required',
+  MEDIA_TYPE_MUST_BE_ONE_OF: 'Media type must be one of',
+  PEOPLE_MUST_BE_ONE_OF: 'People must be one of'
+} as const
+
+export const CONVERSATIONS_MESSAGES = {
+  GET_CONVERSATIONS_SUCCESS: 'Get conversations successfully'
 } as const

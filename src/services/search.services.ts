@@ -1,18 +1,69 @@
 import databaseService from '~/services/database.services'
 import { ObjectId } from 'mongodb'
-import { EnumTweetType } from '~/constants/enums'
+import { EnumMediaType, EnumMediaTypeQuery, EnumPeopleFollow, EnumTweetType } from '~/constants/enums'
 
 class SearchService {
-  async search({ content, limit, page, user_id }: { content: string; limit: number; page: number; user_id: string }) {
+  async search({
+    content,
+    limit,
+    page,
+    media_type,
+    user_id,
+    people_follow
+  }: {
+    content: string
+    limit: number
+    page: number
+    media_type?: EnumMediaTypeQuery
+    user_id: string
+    people_follow?: EnumPeopleFollow
+  }) {
+    const $match: any = {
+      $text: {
+        $search: content
+      }
+    }
+
+    if (media_type) {
+      if (media_type === EnumMediaTypeQuery.Image) {
+        $match['medias.type'] = EnumMediaType.Image
+      } else if (media_type === EnumMediaTypeQuery.Video) {
+        $match['medias.type'] = {
+          $in: [EnumMediaType.Video, EnumMediaType.HLS]
+        }
+      }
+    }
+
+    if (people_follow && people_follow === EnumPeopleFollow.Following) {
+      const user_id_obj = new ObjectId(user_id)
+      const followed_user_id = await databaseService.followers
+        .find(
+          {
+            user_id: user_id_obj
+          },
+          {
+            projection: {
+              followed_user_id: 1,
+              _id: 0
+            }
+          }
+        )
+        .toArray()
+      const ids = followed_user_id.map((item) => item.followed_user_id)
+
+      // Mong muốn newfeeds sẽ lấy luôn cả tweet của mình
+      ids.push(user_id_obj)
+
+      $match['user_id'] = {
+        $in: ids
+      }
+    }
+
     const [tweets, total] = await Promise.all([
       databaseService.tweets
         .aggregate([
           {
-            $match: {
-              $text: {
-                $search: content
-              }
-            }
+            $match: $match
           },
           {
             $lookup: {
@@ -22,11 +73,33 @@ class SearchService {
               as: 'user'
             }
           },
-          {
-            $unwind: {
-              path: '$user'
-            }
-          },
+          // {
+          //   $unwind: {
+          //     path: '$user'
+          //   }
+          // },
+          // {
+          //   $addFields: {
+          //     user: {
+          //       $cond: {
+          //         if: {
+          //           $eq: [
+          //             {
+          //               $size: '$user'
+          //             },
+          //             0
+          //           ]
+          //         },
+          //         // Kiểm tra nếu array 'user' rỗng
+          //         then: null,
+          //         // hoặc giá trị mặc định bạn muốn
+          //         else: {
+          //           $arrayToObject: '$user'
+          //         } // Chuyển array thành object nếu không rỗng
+          //       }
+          //     }
+          //   }
+          // },
           {
             $match: {
               $or: [
@@ -170,11 +243,7 @@ class SearchService {
       databaseService.tweets
         .aggregate([
           {
-            $match: {
-              $text: {
-                $search: content
-              }
-            }
+            $match: $match
           },
           {
             $lookup: {
@@ -184,11 +253,11 @@ class SearchService {
               as: 'user'
             }
           },
-          {
-            $unwind: {
-              path: '$user'
-            }
-          },
+          // {
+          //   $unwind: {
+          //     path: '$user'
+          //   }
+          // },
           {
             $match: {
               $or: [
@@ -235,7 +304,10 @@ class SearchService {
       tweet.user_views += 1
     })
 
-    return { tweets, total: total[0].total }
+    return {
+      tweets,
+      total: total[0]?.total || 0
+    }
   }
 }
 

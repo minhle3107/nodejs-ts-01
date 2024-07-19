@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx nodemon --development",
+    "dev": "npx nodemon --env=development",
+    "dev:stag": "npx nodemon --env=staging",
+    "dev:prod": "npx nodemon --env=production",
     "build": "rimraf ./dist && tsc && tsc-alias",
-    "start": "node dist/index.js --production",
+    "start:dev": "node dist/server.js --env=development",
+    "start:stag": "node dist/server.js --env=staging",
+    "start:prod": "node dist/server.js --env=production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
@@ -20,8 +24,11 @@
     "@types/express": "^4.17.21",
     "@types/formidable": "^3.4.5",
     "@types/jsonwebtoken": "^9.0.6",
+    "@types/lodash": "^4.17.7",
     "@types/minimist": "^1.2.5",
     "@types/node": "^20.11.30",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.6",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
     "eslint": "^8.57.0",
@@ -36,14 +43,18 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.609.0",
+    "@aws-sdk/client-ses": "^3.606.0",
+    "@aws-sdk/lib-storage": "^3.609.0",
     "@faker-js/faker": "^8.4.1",
-    "@types/lodash": "^4.17.0",
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.1",
+    "express-rate-limit": "^7.3.1",
     "express-validator": "^7.0.1",
     "formidable": "^3.5.1",
+    "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mime": "^4.0.3",
@@ -52,6 +63,15 @@
     "nanoid": "^5.0.7",
     "sharp": "^0.33.3",
     "slash": "^5.1.0",
+    "socket.io": "^4.7.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.13.0",
+    "yaml": "^2.4.5",
     "zx": "^8.0.2"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.8",
+    "utf-8-validate": "^6.0.4"
   }
 }

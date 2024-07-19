@@ -1,4 +1,73 @@
-import argv from 'minimist'
+import minimist from 'minimist'
+import { config } from 'dotenv'
+import { CorsOptions } from 'cors'
+import { rateLimit } from 'express-rate-limit'
 
-const options = argv(process.argv.slice(2))
-export const isProduction = Boolean(options.production)
+const args = minimist(process.argv.slice(2))
+const environment = args.env || 'development'
+const envFilePath = environment === 'development' ? '.env' : `.env.${environment}`
+
+config({ path: envFilePath })
+
+console.log('Environment:', environment)
+
+export const isDevelopment = environment === 'development'
+console.log('isDevelopment:', isDevelopment)
+
+export const envConfig = {
+  port: (process.env.PORT as string) || 4000,
+  host: process.env.HOST as string,
+  dbUsername: process.env.DB_USERNAME as string,
+  dbPass: process.env.DB_PASS as string,
+  dbName: process.env.DB_NAME as string,
+
+  dbUserCollection: process.env.DB_USER_COLLECTION as string,
+  dbRefreshTokensCollection: process.env.DB_REFRESH_TOKENS_COLLECTION as string,
+  dbFollowersCollection: process.env.DB_FOLLOWERS_COLLECTION as string,
+  dbVideoStatusCollection: process.env.DB_VIDEO_STATUS_COLLECTION as string,
+  dbTweetsCollection: process.env.DB_TWEETS_COLLECTION as string,
+  dbHashtagsCollection: process.env.DB_HASHTAGS_COLLECTION as string,
+  dbBookmarksCollection: process.env.DB_BOOKMARKS_COLLECTION as string,
+  dbLikesCollection: process.env.DB_LIKES_COLLECTION as string,
+  dbConversationCollection: process.env.DB_CONVERSATIONS_COLLECTION as string,
+
+  passwordSecret: process.env.PASSWORD_SECRET as string,
+  jwtSecretForgotPasswordToken: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+  jwtSecretAccessToken: process.env.JWT_SECRET_ACCESS_TOKEN as string,
+  jwtSecretRefreshToken: process.env.JWT_SECRET_REFRESH_TOKEN as string,
+  jwtSecretEmailVerifyToken: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
+  refreshTokenExpiresIn: process.env.REFEESH_TOKEN_EXPORES_IN as string,
+  accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPORES_IN as string,
+  emailVerifyTokenExpiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN as string,
+  forgotPasswordTokenExpiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN as string,
+  googleClientId: process.env.GOOGLE_CLIENT_ID as string,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+  googleRedirectUri: process.env.GOOGLE_REDIRECT_URI as string,
+  clientRedirectUri: process.env.CLIENT_REDIRECT_URI as string,
+  clientUrl: process.env.CLIENT_URL as string,
+  awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+  awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  awsRegion: process.env.AWS_REGION as string,
+  awsBucketName: process.env.AWS_BUCKET_NAME as string,
+  sesFromAddress: process.env.SES_FROM_ADDRESS as string
+}
+
+export const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers.
+  // store: ... , // Redis, Memcached, etc. See below.
+})
+
+export const apiLimiter = rateLimit({
+  windowMs: 5 * 1000, // 5 seconds
+  max: 5, // limit each IP to 10 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers
+})
+
+export const corsOptions: CorsOptions = {
+  // origin: isDevelopment ? '*' : envConfig.clientUrl
+  origin: '*'
+}

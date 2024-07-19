@@ -1,20 +1,19 @@
 import { Request } from 'express'
-import { getNameFromFullName, handleUploadImage, handleUploadVideo, handleUploadVideoHLS } from '~/utils/file'
+import { getFiles, getNameFromFullName, handleUploadImage, handleUploadVideo, handleUploadVideoHLS } from '~/utils/file'
 import sharp from 'sharp'
-import { UPLOADS_IMAGES_DIR } from '~/constants/dir'
+import { UPLOADS_IMAGES_DIR, UPLOADS_VIDEOS_DIR } from '~/constants/dir'
 import path from 'node:path'
 import fs from 'fs'
 import fsPromises from 'fs/promises'
-import { config } from 'dotenv'
-import { isProduction } from '~/constants/config'
-import * as process from 'node:process'
+import { envConfig, isDevelopment } from '~/constants/config'
 import { EnumEncodingStatus, EnumMediaType } from '~/constants/enums'
 import { IMedia } from '~/models/Other'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
 import databaseService from '~/services/database.services'
 import VideoStatus from '~/models/shcemas/VideoStatus.schema'
-
-config()
+import { uploadFileToS3 } from '~/utils/s3'
+import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
+import { rimrafSync } from 'rimraf'
 
 class Queue {
   items: string[]
@@ -56,8 +55,23 @@ class Queue {
       )
       try {
         await encodeHLSWithMultipleVideoStreams(videoPath)
+        const mime = (await import('mime')).default
         this.items.shift()
         await fsPromises.unlink(videoPath)
+
+        const files = getFiles(path.resolve(UPLOADS_VIDEOS_DIR, idName))
+        await Promise.all(
+          files.map((filepath) => {
+            const filename = 'videos-hls' + filepath.replace(path.resolve(UPLOADS_VIDEOS_DIR), '')
+            const contentType = mime.getType(filepath) || 'video/*'
+            return uploadFileToS3({
+              fileName: filename,
+              filePath: filepath,
+              contentType: contentType
+            })
+          })
+        )
+        rimrafSync(path.resolve(UPLOADS_VIDEOS_DIR, idName))
         await databaseService.videoStatus.updateOne(
           { name: idName },
           {
@@ -96,18 +110,79 @@ class Queue {
 const queue = new Queue()
 
 class MediasService {
+  // private apiVersion = 'api/v1'
+  // private localHost = `http://localhost:${envConfig.port}`
+  // private host = envConfig.host
+  // private typeVideoHLS = 'master.m3u8'
+  // private typeImage = 'jpeg'
+  // private imageStaticPathLocal = `${this.localHost}/${this.apiVersion}/static/image`
+  // private videoStreamStaticPathLocal = `${this.localHost}/${this.apiVersion}/static/video-stream`
+  // private videoHLSStaticPathLocal = `${this.localHost}/${this.apiVersion}/static/video-hls`
+  // private imageStaticPathHost = `${this.host}/${this.apiVersion}/static/image`
+  // private videoStreamStaticPathHost = `${this.host}/${this.apiVersion}/static/video-stream`
+  // private videoHLSStaticPathHost = `${this.host}/${this.apiVersion}/static/video-hls`
+
+  private apiVersion = 'api/v1'
+  private localHost = `http://localhost:${envConfig.port}`
+  private host = envConfig.host
+  private typeVideoHLS = 'master.m3u8'
+  private typeImage = 'jpeg'
+
+  private getStaticPath(type: 'image' | 'video-stream' | 'video-hls', isLocal: boolean = true) {
+    const basePath = isLocal ? this.localHost : this.host
+    return `${basePath}/${this.apiVersion}/static/${type}`
+  }
+
+  private imageStaticPathLocal = this.getStaticPath('image')
+  private videoStreamStaticPathLocal = this.getStaticPath('video-stream')
+  private videoHLSStaticPathLocal = this.getStaticPath('video-hls')
+  private imageStaticPathHost = this.getStaticPath('image', false)
+  private videoStreamStaticPathHost = this.getStaticPath('video-stream', false)
+  private videoHLSStaticPathHost = this.getStaticPath('video-hls', false)
+
   async handleUploadImage(req: Request) {
     const files = await handleUploadImage(req)
     const result: IMedia[] = await Promise.all(
       files.map(async (file) => {
         const newNameImage = getNameFromFullName(file.newFilename)
-        const newPath = path.resolve(UPLOADS_IMAGES_DIR, `${newNameImage}.jpeg`)
+        const newPath = path.resolve(UPLOADS_IMAGES_DIR, `${newNameImage}.${this.typeImage}`)
         await sharp(file.filepath).jpeg().toFile(newPath)
         fs.unlinkSync(file.filepath)
         return {
-          url: isProduction
-            ? `${process.env.HOST}/static/image/${newNameImage}.jpeg`
-            : `http://localhost:${process.env.PORT}/static/image/${newNameImage}.jpeg`,
+          url: isDevelopment
+            ? `${this.imageStaticPathLocal}/${newNameImage}.${this.typeImage}`
+            : `${this.imageStaticPathHost}/${newNameImage}.${this.typeImage}`,
+          type: EnumMediaType.Image
+        }
+      })
+    )
+    return result
+  }
+
+  async handleUploadImageToS3(req: Request) {
+    const mime = (await import('mime')).default
+    const files = await handleUploadImage(req)
+    const result: IMedia[] = await Promise.all(
+      files.map(async (file) => {
+        const newNameImage = getNameFromFullName(file.newFilename)
+        const newFileFullName = `${newNameImage}.${this.typeImage}`
+        const newPath = path.resolve(UPLOADS_IMAGES_DIR, newFileFullName)
+        await sharp(file.filepath).jpeg().toFile(newPath)
+        const s3Result = await uploadFileToS3({
+          fileName: `images/${newFileFullName}`,
+          filePath: newPath,
+          contentType: 'image/jpeg'
+        })
+
+        await Promise.all([fsPromises.unlink(file.filepath), fsPromises.unlink(newPath)])
+        // return {
+        //   url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+        //   type: EnumMediaType.Image
+        // }
+        return {
+          url: isDevelopment
+            ? `${this.imageStaticPathLocal}/${newNameImage}.${this.typeImage}`
+            : `${this.imageStaticPathHost}/${newNameImage}.${this.typeImage}`,
           type: EnumMediaType.Image
         }
       })
@@ -119,12 +194,40 @@ class MediasService {
     const files = await handleUploadVideo(req)
     const result: IMedia[] = files.map((file) => {
       return {
-        url: isProduction
-          ? `${process.env.HOST}/static/video-stream/${file.newFilename}`
-          : `http://localhost:${process.env.PORT}/static/video-stream/${file.newFilename}`,
+        url: isDevelopment
+          ? `${this.videoStreamStaticPathLocal}/${file.newFilename}`
+          : `${this.videoStreamStaticPathHost}/${file.newFilename}`,
         type: EnumMediaType.Video
       }
     })
+
+    return result
+  }
+
+  async handleUploadVideoToS3(req: Request) {
+    const files = await handleUploadVideo(req)
+    const result: IMedia[] = await Promise.all(
+      files.map(async (file) => {
+        const s3Result = await uploadFileToS3({
+          fileName: `videos/${file.newFilename}`,
+          filePath: file.filepath,
+          contentType: 'video/mp4'
+        })
+        // await fsPromises.unlink(file.filepath)
+        const dirPath = path.dirname(file.filepath) // Get the directory path
+        await fsPromises.rm(dirPath, { recursive: true })
+        return {
+          url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+          type: EnumMediaType.Video
+        }
+        // return {
+        //   url: !isDevelopment
+        //     ? `${this.host}/${this.apiVersion}/static/video-stream/${file.newFilename}`
+        //     : `${this.localHost}/${this.apiVersion}/static/video-stream/${file.newFilename}`,
+        //   type: EnumMediaType.Video
+        // }
+      })
+    )
 
     return result
   }
@@ -136,9 +239,9 @@ class MediasService {
         const folderVideo = getNameFromFullName(file.newFilename)
         await queue.enqueue(file.filepath)
         return {
-          url: isProduction
-            ? `${process.env.HOST}/static/video-hls/${folderVideo}/master.m3u8`
-            : `http://localhost:${process.env.PORT}/static/video-hls/${folderVideo}/master.m3u8`,
+          url: isDevelopment
+            ? `${this.videoHLSStaticPathLocal}/${folderVideo}/${this.typeVideoHLS}`
+            : `${this.videoHLSStaticPathHost}/${folderVideo}/${this.typeVideoHLS}`,
           type: EnumMediaType.HLS
         }
       })

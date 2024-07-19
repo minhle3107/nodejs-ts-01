@@ -6,6 +6,7 @@ import path from 'node:path'
 import httpStatus from '~/constants/httpStatus'
 import fs from 'fs'
 import { getNameFromFullName } from '~/utils/file'
+import { sendFileFromS3 } from '~/utils/s3'
 
 export const uploadImageController = async (req: Request, res: Response) => {
   const urlImage = await mediasService.handleUploadImage(req)
@@ -15,17 +16,37 @@ export const uploadImageController = async (req: Request, res: Response) => {
   })
 }
 
+export const uploadImageToS3Controller = async (req: Request, res: Response) => {
+  const urlImage = await mediasService.handleUploadImageToS3(req)
+  return res.json({
+    message: USERS_MESSAGES.UPLOAD_IMAGE_SUCCESS,
+    result: urlImage
+  })
+}
+
+// export const serveImagesController = async (req: Request, res: Response) => {
+//   const { name } = req.params
+//   return res.sendFile(path.resolve(UPLOADS_IMAGES_DIR, name), (err) => {
+//     if (err) {
+//       res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.IMAGE_NOT_FOUND)
+//     }
+//   })
+// }
+
 export const serveImagesController = async (req: Request, res: Response) => {
   const { name } = req.params
-  return res.sendFile(path.resolve(UPLOADS_IMAGES_DIR, name), (err) => {
-    if (err) {
-      res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.IMAGE_NOT_FOUND)
-    }
-  })
+  await sendFileFromS3(res, `images/${name}`)
 }
 
 export const uploadVideoController = async (req: Request, res: Response) => {
   const urlVideo = await mediasService.handleUploadVideo(req)
+  return res.json({
+    message: USERS_MESSAGES.UPLOAD_VIDEO_SUCCESS,
+    result: urlVideo
+  })
+}
+export const uploadVideoToS3Controller = async (req: Request, res: Response) => {
+  const urlVideo = await mediasService.handleUploadVideoToS3(req)
   return res.json({
     message: USERS_MESSAGES.UPLOAD_VIDEO_SUCCESS,
     result: urlVideo
@@ -77,20 +98,45 @@ export const serveVideoStreamVideoController = async (req: Request, res: Respons
   videoStream.pipe(res)
 }
 
+// export const serveVideoStreamVideoController = async (req: Request, res: Response) => {
+//   const range = req.headers.range
+//   console.log('range', range)
+//   if (!range) {
+//     return res.status(httpStatus.BAD_REQUEST).send(USERS_MESSAGES.INVALID_RANGE)
+//   }
+//
+//   const { name } = req.params
+//   console.log('name', name)
+//   const filepath = `videos/${name}` // Đường dẫn tới video trên S3
+//
+//   // Gọi sendFileFromS3 với filepath. Lưu ý: sendFileFromS3 cần được cập nhật để hỗ trợ Range requests
+//   await sendFileFromS3(res, filepath, range)
+// }
+
+// export const serveM3U8Controller = async (req: Request, res: Response) => {
+//   const { id } = req.params
+//   return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, 'master.m3u8'), (err) => {
+//     if (err) {
+//       res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
+//     }
+//   })
+// }
+//
+// export const serveSegmentController = async (req: Request, res: Response) => {
+//   const { id, v, segment } = req.params
+//   return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, v, segment), (err) => {
+//     if (err) {
+//       res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
+//     }
+//   })
+// }
+
 export const serveM3U8Controller = async (req: Request, res: Response) => {
   const { id } = req.params
-  return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, 'master.m3u8'), (err) => {
-    if (err) {
-      res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
-    }
-  })
+  await sendFileFromS3(res, `videos-hls/${id}/master.m3u8`)
 }
 
 export const serveSegmentController = async (req: Request, res: Response) => {
   const { id, v, segment } = req.params
-  return res.sendFile(path.resolve(UPLOADS_VIDEOS_DIR, id, v, segment), (err) => {
-    if (err) {
-      res.status((err as any).status || httpStatus.NOT_FOUND).send(USERS_MESSAGES.VIDEO_NOT_FOUND)
-    }
-  })
+  await sendFileFromS3(res, `videos-hls/${id}/${v}/${segment}`)
 }

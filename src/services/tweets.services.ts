@@ -28,18 +28,6 @@ class TweetsService {
     return hashtagsDocuments.filter(Boolean).map((hashtag) => (hashtag as WithId<Hashtag>)._id)
   }
 
-  // async checkAndCreateHashtags(hashtags: string[]) {
-  //   return Promise.all(
-  //     hashtags.map((hashtag) =>
-  //       databaseService.hashtags.findOneAndUpdate(
-  //         { name: hashtag },
-  //         { $setOnInsert: new Hashtag({ name: hashtag }) },
-  //         { upsert: true, returnDocument: 'after' }
-  //       )
-  //     )
-  //   ).then((hashtagsDocuments) => hashtagsDocuments.filter(Boolean).map((hashtag) => (hashtag as WithId<Hashtag>)._id))
-  // }
-
   async createTweet(user_id: string, body: TweetRequestsBody) {
     const hashtags = await this.checkAndCreateHashtags(body.hashtags)
     const tweet = new Tweet({
@@ -282,11 +270,11 @@ class TweetsService {
               as: 'user'
             }
           },
-          {
-            $unwind: {
-              path: '$user'
-            }
-          },
+          // {
+          //   $unwind: {
+          //     path: '$user'
+          //   }
+          // },
           {
             $match: {
               $or: [
@@ -444,11 +432,11 @@ class TweetsService {
               as: 'user'
             }
           },
-          {
-            $unwind: {
-              path: '$user'
-            }
-          },
+          // {
+          //   $unwind: {
+          //     path: '$user'
+          //   }
+          // },
           {
             $match: {
               $or: [
@@ -494,7 +482,11 @@ class TweetsService {
       tweet.updated_at = date
       tweet.user_views += 1
     })
-    return { tweets, total: total[0].total }
+
+    return {
+      tweets,
+      total: total[0]?.total || 0
+    }
   }
 }
 

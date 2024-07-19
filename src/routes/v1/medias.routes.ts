@@ -1,14 +1,16 @@
-import { Router } from 'express'
+import express from 'express'
 import {
   uploadImageController,
+  uploadImageToS3Controller,
   uploadVideoController,
   uploadVideoHLSController,
+  uploadVideoToS3Controller,
   videoStatusController
 } from '~/controllers/medias.controllers'
 import { wrapRequestsHandler } from '~/utils/handlers'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 
-const mediasRoutes = Router()
+const mediasRoutes = express.Router()
 
 mediasRoutes.post(
   '/upload-image',
@@ -16,12 +18,25 @@ mediasRoutes.post(
   verifiedUserValidator,
   wrapRequestsHandler(uploadImageController)
 )
+mediasRoutes.post(
+  '/upload-image-to-s3',
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestsHandler(uploadImageToS3Controller)
+)
 
 mediasRoutes.post(
   '/upload-video',
   accessTokenValidator,
   verifiedUserValidator,
   wrapRequestsHandler(uploadVideoController)
+)
+
+mediasRoutes.post(
+  '/upload-video-to-s3',
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestsHandler(uploadVideoToS3Controller)
 )
 
 mediasRoutes.post(

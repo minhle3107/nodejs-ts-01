@@ -4,17 +4,15 @@ import { IRegisterReqBody, IUpdateMeReqBody } from '~/models/requests/User.reque
 import { handleHashPassword } from '~/utils/crypto'
 import { EnumTokenType, EnumUserVerifyStatus } from '~/constants/enums'
 import { handleSignToken, verifyToken } from '~/utils/jwt'
-import * as process from 'process'
 import RefreshToken from '~/models/shcemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
-import { config } from 'dotenv'
 import USERS_MESSAGES from '~/constants/messages'
 import Follower from '~/models/shcemas/Follower.schema'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import httpStatus from '~/constants/httpStatus'
-
-config()
+import { sendForgotPasswordEmail, sendVerifyRegisterEmail } from '~/utils/email'
+import { envConfig } from '~/constants/config'
 
 class UsersService {
   private signAccessToken({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
@@ -24,9 +22,9 @@ class UsersService {
         token_type: EnumTokenType.AccessToken,
         verify_status
       },
-      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
+      privateKey: envConfig.jwtSecretAccessToken,
       options: {
-        expiresIn: process.env.ACCESS_TOKEN_EXPORES_IN
+        expiresIn: envConfig.accessTokenExpiresIn
       }
     })
   }
@@ -48,7 +46,7 @@ class UsersService {
           verify_status,
           exp
         },
-        privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+        privateKey: envConfig.jwtSecretRefreshToken
       })
     }
     return handleSignToken({
@@ -57,9 +55,9 @@ class UsersService {
         token_type: EnumTokenType.RefreshToken,
         verify_status
       },
-      privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
+      privateKey: envConfig.jwtSecretRefreshToken,
       options: {
-        expiresIn: process.env.REFEESH_TOKEN_EXPORES_IN
+        expiresIn: envConfig.refreshTokenExpiresIn
       }
     })
   }
@@ -71,9 +69,9 @@ class UsersService {
         token_type: EnumTokenType.EmailVerifyToken,
         verify_status
       },
-      privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
+      privateKey: envConfig.jwtSecretEmailVerifyToken,
       options: {
-        expiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN
+        expiresIn: envConfig.emailVerifyTokenExpiresIn
       }
     })
   }
@@ -91,9 +89,9 @@ class UsersService {
         token_type: EnumTokenType.ForgotPasswordToken,
         verify_status
       },
-      privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+      privateKey: envConfig.jwtSecretForgotPasswordToken,
       options: {
-        expiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN
+        expiresIn: envConfig.forgotPasswordTokenExpiresIn
       }
     })
   }
@@ -114,7 +112,7 @@ class UsersService {
   private decodeRefreshToken(refresh_token: string) {
     return verifyToken({
       token: refresh_token,
-      secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+      secretOrPublicKey: envConfig.jwtSecretRefreshToken
     })
   }
 
@@ -149,7 +147,16 @@ class UsersService {
         exp
       })
     )
+
+    /*
+     * Follow verify email
+     * 1. Gửi email chứa link verify email có dạng: https://domain.com/verify-email?token=email_verify_token
+     * 2. Khi người dùng click vào link thì gọi API verify email
+     * 3. API verify email sẽ kiểm tra token và update trạng thái verify_status của user thành Verified
+     * 4. Sau khi verify email thành công thì trả về access_token và refresh_token
+     */
     console.log('email_verify_token', email_verify_token)
+    // await sendVerifyRegisterEmail(payload.email, email_verify_token)
     return { access_token, refresh_token }
   }
 
@@ -180,9 +187,9 @@ class UsersService {
   private async getOauthGoogleToken(code: string) {
     const body = {
       code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      client_id: envConfig.googleClientId,
+      client_secret: envConfig.googleClientSecret,
+      redirect_uri: envConfig.googleRedirectUri,
       grant_type: 'authorization_code'
     }
     const { data } = await axios.post('https://oauth2.googleapis.com/token', body, {
@@ -339,7 +346,7 @@ class UsersService {
     return { access_token, refresh_token }
   }
 
-  async resendVerifyEmail(user_id: string) {
+  async resendVerifyEmail(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({
       user_id,
       verify_status: EnumUserVerifyStatus.Unverified
@@ -353,11 +360,19 @@ class UsersService {
         $currentDate: { updated_at: true }
       }
     )
-    console.log('Resend verify email', email_verify_token)
+    await sendVerifyRegisterEmail(email, email_verify_token)
     return { message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESSFULLY }
   }
 
-  async forgotPassword({ user_id, verify_status }: { user_id: string; verify_status: EnumUserVerifyStatus }) {
+  async forgotPassword({
+    user_id,
+    verify_status,
+    email
+  }: {
+    user_id: string
+    verify_status: EnumUserVerifyStatus
+    email: string
+  }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify_status })
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) },
@@ -369,7 +384,8 @@ class UsersService {
       }
     )
     // Gửi email chứa link reset password có dạng: https://domain.com/reset-password?token=forgot_password_token
-    console.log('Forgot password token', forgot_password_token)
+    // console.log('Forgot password token', forgot_password_token)
+    await sendForgotPasswordEmail(email, forgot_password_token)
     return { message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD }
   }
 

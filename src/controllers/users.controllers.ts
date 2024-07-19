@@ -24,6 +24,7 @@ import databaseService from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { EnumUserVerifyStatus } from '~/constants/enums'
 import * as process from 'node:process'
+import { envConfig } from '~/constants/config'
 
 export const loginController = async (req: Request<ParamsDictionary, any, ILoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -38,7 +39,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, ILogin
 export const oauthGoogleController = async (req: Request, res: Response) => {
   const { code } = req.query
   const result = await usersServices.oauthGoogle(code as string)
-  const urlRedirect = `${process.env.CLIENT_REDIRECT_URI}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify_status=${result.verify_status}`
+  const urlRedirect = `${envConfig.clientRedirectUri}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify_status=${result.verify_status}`
   return res.redirect(urlRedirect)
 }
 
@@ -119,7 +120,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
     })
   }
 
-  const result = await usersServices.resendVerifyEmail(user_id)
+  const result = await usersServices.resendVerifyEmail(user_id, user.email)
   return res.json({ result })
 }
 
@@ -127,10 +128,11 @@ export const forgotPasswordController = async (
   req: Request<ParamsDictionary, any, IForgotPasswordReqBody>,
   res: Response
 ) => {
-  const { _id, verify_status } = req.user as User
+  const { _id, verify_status, email } = req.user as User
   const result = await usersServices.forgotPassword({
     user_id: (_id as ObjectId).toString(),
-    verify_status
+    verify_status,
+    email
   })
   return res.json({ result })
 }
