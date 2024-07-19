@@ -5,7 +5,7 @@ import { UPLOADS_IMAGES_DIR, UPLOADS_VIDEOS_DIR } from '~/constants/dir'
 import path from 'node:path'
 import fs from 'fs'
 import fsPromises from 'fs/promises'
-import { envConfig, isProduction } from '~/constants/config'
+import { envConfig, isDevelopment } from '~/constants/config'
 import { EnumEncodingStatus, EnumMediaType } from '~/constants/enums'
 import { IMedia } from '~/models/Other'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
@@ -110,18 +110,48 @@ class Queue {
 const queue = new Queue()
 
 class MediasService {
+  // private apiVersion = 'api/v1'
+  // private localHost = `http://localhost:${envConfig.port}`
+  // private host = envConfig.host
+  // private typeVideoHLS = 'master.m3u8'
+  // private typeImage = 'jpeg'
+  // private imageStaticPathLocal = `${this.localHost}/${this.apiVersion}/static/image`
+  // private videoStreamStaticPathLocal = `${this.localHost}/${this.apiVersion}/static/video-stream`
+  // private videoHLSStaticPathLocal = `${this.localHost}/${this.apiVersion}/static/video-hls`
+  // private imageStaticPathHost = `${this.host}/${this.apiVersion}/static/image`
+  // private videoStreamStaticPathHost = `${this.host}/${this.apiVersion}/static/video-stream`
+  // private videoHLSStaticPathHost = `${this.host}/${this.apiVersion}/static/video-hls`
+
+  private apiVersion = 'api/v1'
+  private localHost = `http://localhost:${envConfig.port}`
+  private host = envConfig.host
+  private typeVideoHLS = 'master.m3u8'
+  private typeImage = 'jpeg'
+
+  private getStaticPath(type: 'image' | 'video-stream' | 'video-hls', isLocal: boolean = true) {
+    const basePath = isLocal ? this.localHost : this.host
+    return `${basePath}/${this.apiVersion}/static/${type}`
+  }
+
+  private imageStaticPathLocal = this.getStaticPath('image')
+  private videoStreamStaticPathLocal = this.getStaticPath('video-stream')
+  private videoHLSStaticPathLocal = this.getStaticPath('video-hls')
+  private imageStaticPathHost = this.getStaticPath('image', false)
+  private videoStreamStaticPathHost = this.getStaticPath('video-stream', false)
+  private videoHLSStaticPathHost = this.getStaticPath('video-hls', false)
+
   async handleUploadImage(req: Request) {
     const files = await handleUploadImage(req)
     const result: IMedia[] = await Promise.all(
       files.map(async (file) => {
         const newNameImage = getNameFromFullName(file.newFilename)
-        const newPath = path.resolve(UPLOADS_IMAGES_DIR, `${newNameImage}.jpeg`)
+        const newPath = path.resolve(UPLOADS_IMAGES_DIR, `${newNameImage}.${this.typeImage}`)
         await sharp(file.filepath).jpeg().toFile(newPath)
         fs.unlinkSync(file.filepath)
         return {
-          url: isProduction
-            ? `${envConfig.host}/api/v1/static/image/${newNameImage}.jpeg`
-            : `http://localhost:${envConfig.port}/api/v1/static/image/${newNameImage}.jpeg`,
+          url: isDevelopment
+            ? `${this.imageStaticPathLocal}/${newNameImage}.${this.typeImage}`
+            : `${this.imageStaticPathHost}/${newNameImage}.${this.typeImage}`,
           type: EnumMediaType.Image
         }
       })
@@ -135,7 +165,7 @@ class MediasService {
     const result: IMedia[] = await Promise.all(
       files.map(async (file) => {
         const newNameImage = getNameFromFullName(file.newFilename)
-        const newFileFullName = `${newNameImage}.jpeg`
+        const newFileFullName = `${newNameImage}.${this.typeImage}`
         const newPath = path.resolve(UPLOADS_IMAGES_DIR, newFileFullName)
         await sharp(file.filepath).jpeg().toFile(newPath)
         const s3Result = await uploadFileToS3({
@@ -150,9 +180,9 @@ class MediasService {
         //   type: EnumMediaType.Image
         // }
         return {
-          url: isProduction
-            ? `${envConfig.host}/api/v1/static/image/${newNameImage}.jpeg`
-            : `http://localhost:${envConfig.port}/api/v1/static/image/${newNameImage}.jpeg`,
+          url: isDevelopment
+            ? `${this.imageStaticPathLocal}/${newNameImage}.${this.typeImage}`
+            : `${this.imageStaticPathHost}/${newNameImage}.${this.typeImage}`,
           type: EnumMediaType.Image
         }
       })
@@ -164,9 +194,9 @@ class MediasService {
     const files = await handleUploadVideo(req)
     const result: IMedia[] = files.map((file) => {
       return {
-        url: isProduction
-          ? `${envConfig.host}/api/v1/static/video-stream/${file.newFilename}`
-          : `http://localhost:${envConfig.port}/api/v1/static/video-stream/${file.newFilename}`,
+        url: isDevelopment
+          ? `${this.videoStreamStaticPathLocal}/${file.newFilename}`
+          : `${this.videoStreamStaticPathHost}/${file.newFilename}`,
         type: EnumMediaType.Video
       }
     })
@@ -191,9 +221,9 @@ class MediasService {
           type: EnumMediaType.Video
         }
         // return {
-        //   url: isProduction
-        //     ? `${envConfig.host}/api/v1/static/video-stream/${file.newFilename}`
-        //     : `http://localhost:${envConfig.port}/api/v1/static/video-stream/${file.newFilename}`,
+        //   url: !isDevelopment
+        //     ? `${this.host}/${this.apiVersion}/static/video-stream/${file.newFilename}`
+        //     : `${this.localHost}/${this.apiVersion}/static/video-stream/${file.newFilename}`,
         //   type: EnumMediaType.Video
         // }
       })
@@ -209,9 +239,9 @@ class MediasService {
         const folderVideo = getNameFromFullName(file.newFilename)
         await queue.enqueue(file.filepath)
         return {
-          url: isProduction
-            ? `${envConfig.host}/api/v1/static/video-hls/${folderVideo}/master.m3u8`
-            : `http://localhost:${envConfig.port}/api/v1/static/video-hls/${folderVideo}/master.m3u8`,
+          url: isDevelopment
+            ? `${this.videoHLSStaticPathLocal}/${folderVideo}/${this.typeVideoHLS}`
+            : `${this.videoHLSStaticPathHost}/${folderVideo}/${this.typeVideoHLS}`,
           type: EnumMediaType.HLS
         }
       })

@@ -11,8 +11,8 @@ config({ path: envFilePath })
 
 console.log('Environment:', environment)
 
-export const isProduction = environment === 'production'
-console.log('isProduction:', isProduction)
+export const isDevelopment = environment === 'development'
+console.log('isDevelopment:', isDevelopment)
 
 export const envConfig = {
   port: (process.env.PORT as string) || 4000,
@@ -58,5 +58,5 @@ export const limiter = rateLimit({
 })
 
 export const corsOptions: CorsOptions = {
-  origin: isProduction ? envConfig.clientUrl : '*'
+  origin: isDevelopment ? '*' : envConfig.clientUrl
 }
