@@ -20,7 +20,7 @@ async function startServer() {
   try {
     await Promise.all([initFolder(), databaseService.initializeDatabase()])
 
-    const swaggerDocument = yaml.parse(fs.readFileSync(path.resolve('openapi/_build/openapi.yaml'), 'utf-8'))
+    const swaggerDocument = yaml.parse(fs.readFileSync(path.resolve('openapi/openapi.yaml'), 'utf-8'))
 
     const app = express()
 
@@ -37,6 +37,10 @@ async function startServer() {
         socket_id: string
       }
     } = {}
+
+    io.use((socket, next) => {
+      const { Authorization } = socket.handshake.auth
+    })
 
     io.on('connection', (socket) => {
       console.log(`user ${socket.id} connected`)
