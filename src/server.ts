@@ -13,11 +13,11 @@ import { requestLoggerMiddleware } from '~/middlewares/logging.middleware'
 import swaggerUi from 'swagger-ui-express'
 import v1Routes from '~/routes/v1'
 import { defaultErrorHandler } from '~/middlewares/error.middlewares'
+import Conversation from '~/models/shcemas/Conversations.schema'
 
 async function startServer() {
   try {
-    initFolder()
-    await databaseService.initializeDatabase()
+    await Promise.all([initFolder(), databaseService.initializeDatabase()])
 
     const swaggerDocument = yaml.parse(fs.readFileSync(path.resolve('openapi/_build/openapi.yaml'), 'utf-8'))
 
@@ -29,11 +29,48 @@ async function startServer() {
     app.use(defaultErrorHandler)
 
     const httpServer = createServer(app)
-    const io = new Server(httpServer)
+    const io = new Server(httpServer, { cors: corsOptions })
+
+    const users: {
+      [key: string]: {
+        socket_id: string
+      }
+    } = {}
 
     io.on('connection', (socket) => {
       console.log(`user ${socket.id} connected`)
-      socket.on('disconnect', () => console.log(`user ${socket.id} disconnected`))
+      const user_id = socket.handshake.auth._id
+      console.log(user_id)
+      users[user_id] = { socket_id: socket.id }
+
+      console.log(users)
+
+      socket.on('private message', async (data) => {
+        const receiver_socket_id = users[data.to]?.socket_id
+        console.log(receiver_socket_id)
+        if (!receiver_socket_id) {
+          return
+        }
+
+        await databaseService.conversations.insertOne(
+          new Conversation({
+            sender_id: data.from,
+            receiver_id: data.to,
+            content: data.content
+          })
+        )
+
+        socket.to(receiver_socket_id).emit('receive private message', {
+          content: data.content,
+          from: user_id
+        })
+      })
+
+      socket.on('disconnect', () => {
+        delete users[user_id]
+        console.log(`user ${socket.id} disconnected`)
+        console.log(users)
+      })
     })
 
     httpServer.listen(envConfig.port, () => console.log(`App listening on port ${envConfig.port}`))
@@ -42,4 +79,6 @@ async function startServer() {
   }
 }
 
-startServer().then(() => console.log('Server started successfully'))
+startServer()
+  .then(() => console.log('Server started successfully'))
+  .catch((error) => console.error('Failed to start the server:', error))

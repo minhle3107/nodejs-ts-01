@@ -20,6 +20,7 @@ export const envConfig = {
   dbUsername: process.env.DB_USERNAME as string,
   dbPass: process.env.DB_PASS as string,
   dbName: process.env.DB_NAME as string,
+
   dbUserCollection: process.env.DB_USER_COLLECTION as string,
   dbRefreshTokensCollection: process.env.DB_REFRESH_TOKENS_COLLECTION as string,
   dbFollowersCollection: process.env.DB_FOLLOWERS_COLLECTION as string,
@@ -28,6 +29,8 @@ export const envConfig = {
   dbHashtagsCollection: process.env.DB_HASHTAGS_COLLECTION as string,
   dbBookmarksCollection: process.env.DB_BOOKMARKS_COLLECTION as string,
   dbLikesCollection: process.env.DB_LIKES_COLLECTION as string,
+  dbConversationCollection: process.env.DB_CONVERSATIONS_COLLECTION as string,
+
   passwordSecret: process.env.PASSWORD_SECRET as string,
   jwtSecretForgotPasswordToken: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
   jwtSecretAccessToken: process.env.JWT_SECRET_ACCESS_TOKEN as string,
@@ -55,6 +58,13 @@ export const limiter = rateLimit({
   standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
   legacyHeaders: false // Disable the `X-RateLimit-*` headers.
   // store: ... , // Redis, Memcached, etc. See below.
+})
+
+export const apiLimiter = rateLimit({
+  windowMs: 5 * 1000, // 5 seconds
+  max: 5, // limit each IP to 10 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers
 })
 
 export const corsOptions: CorsOptions = {

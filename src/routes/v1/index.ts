@@ -7,10 +7,11 @@ import bookmarksRoutes from '~/routes/v1/bookmarks.routes'
 import likesRoutes from '~/routes/v1/likes.routes'
 import searchRoutes from '~/routes/v1/search.routes'
 import { UPLOADS_VIDEOS_DIR } from '~/constants/dir'
+import { apiLimiter } from '~/constants/config'
 
 const v1Routes = express.Router()
 
-v1Routes.use('/users', usersRoutes)
+v1Routes.use('/users', apiLimiter, usersRoutes)
 v1Routes.use('/medias', mediasRoutes)
 v1Routes.use('/static', staticRoutes)
 v1Routes.use('/tweets', tweetsRoutes)

@@ -4,6 +4,7 @@ info:
   description: API documentation example
   version: 1.0.0
 servers:
+  - url: 'https://api.minhle3107.site/api/v1'
   - url: 'http://localhost:4000/api/v1'
 tags:
   - name: users

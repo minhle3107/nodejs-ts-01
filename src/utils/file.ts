@@ -6,7 +6,7 @@ import fs from 'fs'
 import USERS_MESSAGES from '~/constants/messages'
 import path from 'node:path'
 
-export const initFolder = () => {
+export const initFolder = async () => {
   ;[LOGS_DIR, UPLOADS_IMAGES_TEMPS_DIR, UPLOADS_VIDEOS_TEMPS_DIR].forEach((dir) => {
     if (!existsSync(dir)) {
       mkdirSync(dir, { recursive: true })

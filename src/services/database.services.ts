@@ -8,6 +8,7 @@ import Hashtag from '~/models/shcemas/Hashtag.schema'
 import Bookmark from '~/models/shcemas/Bookmark.schema'
 import Like from '~/models/shcemas/Like.schema'
 import { envConfig } from '~/constants/config'
+import Conversation from '~/models/shcemas/Conversations.schema'
 
 // const uri = `mongodb+srv://${envConfig.dbUsername}:${envConfig.dbPass}@twitter.rifbmvv.mongodb.net/?retryWrites=true&w=majority&appName=Twitter`
 
@@ -101,6 +102,10 @@ class DatabaseService {
 
   get likes(): Collection<Like> {
     return this.db.collection(envConfig.dbLikesCollection)
+  }
+
+  get conversations(): Collection<Conversation> {
+    return this.db.collection(envConfig.dbConversationCollection)
   }
 
   async initializeDatabase() {
