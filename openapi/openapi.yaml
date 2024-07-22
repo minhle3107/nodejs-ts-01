@@ -932,9 +932,9 @@ paths:
     get:
       tags:
         - conversations
-      summary: Search
-      description: Search
-      operationId: search
+      summary: Conversation
+      description: Conversation
+      operationId: Conversation
       security:
         - bearerAuth: [ ]
       parameters:
