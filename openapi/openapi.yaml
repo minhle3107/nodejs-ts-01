@@ -1,8 +1,8 @@
 openapi: 3.0.0
 
 info:
-  title: Twitter Clone - 2024
-  description: API documentation example
+  title: Twitter Client Clone - 2024
+  description: Twitter Client Clone - 2024
   version: 1.0.0
 
 servers:
