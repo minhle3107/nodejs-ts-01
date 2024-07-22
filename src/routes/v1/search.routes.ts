@@ -3,6 +3,7 @@ import { searchController } from '~/controllers/search.controllers'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { searchValidator } from '~/middlewares/search.middlewares'
 import { paginationValidotor } from '~/middlewares/tweets.middlewares'
+import { wrapRequestsHandler } from '~/utils/handlers'
 
 const searchRoutes = express.Router()
 
@@ -12,7 +13,7 @@ searchRoutes.get(
   verifiedUserValidator,
   searchValidator,
   paginationValidotor,
-  searchController
+  wrapRequestsHandler(searchController)
 )
 
 export default searchRoutes

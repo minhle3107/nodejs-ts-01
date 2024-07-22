@@ -1,11 +1,14 @@
 openapi: 3.0.0
+
 info:
   title: Twitter Clone - 2024
   description: API documentation example
   version: 1.0.0
+
 servers:
   - url: 'https://api.minhle3107.site/api/v1'
   - url: 'http://localhost:4000/api/v1'
+
 tags:
   - name: auth
     description: Operations about authentication
@@ -236,6 +239,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JwtExpired'
+  /users/logout:
+    post:
+      tags:
+        - auth
+      summary: Logout user
+      description: Logout user
+      operationId: logoutUser
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Logout successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
 
   /users/refresh-token:
     post:
@@ -289,6 +310,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JwtExpired'
+    patch:
+      tags:
+        - users
+      summary: Update user profile
+      description: Update user profile
+      operationId: updateUserProfile
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        description: Update user profile
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Minh Lê
+                bio:
+                  type: string
+                  example: ""
+                location:
+                  type: string
+                  example: ""
+                website:
+                  type: string
+                  example: ""
+      responses:
+        '200':
+          description: Update user profile successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Update user profile successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
   /users/{username}:
     get:
       tags:
@@ -319,6 +387,8 @@ paths:
       summary: Follow user
       description: Follow user
       operationId: followUser
+      security:
+        - bearerAuth: [ ]
       requestBody:
         description: Follow user
         content:
@@ -356,6 +426,8 @@ paths:
       summary: Unfollow user
       description: Unfollow user
       operationId: unfollowUser
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: user_id
           in: path
@@ -384,11 +456,526 @@ paths:
               schema:
                 $ref: '#/components/schemas/JwtExpired'
 
-  
 
+  /medias/upload-image-to-s3:
+    post:
+      tags:
+        - medias
+      summary: Upload images to S3
+      description: Upload images to S3
+      operationId: uploadImages to S3
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        description: Upload images to S3
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Return image url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadImageSuccessResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /static/image/{name}:
+    get:
+      tags:
+        - medias
+      summary: Get image
+      description: Get image
+      operationId: getImage
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Image name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return image
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Image not found
+  /medias/upload-video-to-s3:
+    post:
+      tags:
+        - medias
+      summary: Upload video to S3
+      description: Upload video to S3
+      operationId: uploadVideo to S3
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        description: Upload video to S3
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Return video url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadVideoSuccessResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /medias/upload-video-hls:
+    post:
+      tags:
+        - medias
+      summary: Upload video to S3 and convert to HLS
+      description: Upload video to S3 and convert to HLS
+      operationId: uploadVideoHLS
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        description: Upload video to S3 and convert to HLS
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Return video url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadVideoSuccessResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /static/video-stream/{name}:
+    get:
+      tags:
+        - medias
+      summary: Get video
+      description: Get video
+      operationId: getVideo
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Video name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return video
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Video not found
+  /medias/video-status/{id}:
+    get:
+      tags:
+        - medias
+      summary: Get video status
+      description: Get video status
+      operationId: getVideoStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Video id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return video status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoStatusResponse'
+        '404':
+          description: Video not found
 
+  /tweets:
+    post:
+      tags:
+        - tweets
+      summary: Create tweet
+      description: Create tweet
+      operationId: createTweet
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        description: Create tweet
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TweetRequest'
+      responses:
+        '200':
+          description: Tweet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TweetCreatedResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /tweets/{id}:
+    get:
+      tags:
+        - tweets
+      summary: Get tweet
+      description: Get tweet
+      operationId: getTweet
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Tweet id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return tweet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTweetResponse'
+        '404':
+          description: Tweet not found
+  /tweets/:
+    get:
+      tags:
+        - tweets
+      summary: Get tweets
+      description: Get tweets with pagination.
+      operationId: getTweets
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: limit
+          in: query
+          required: true
+          description: Limit of tweets per page.
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: true
+          description: Page number of the tweets pagination.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Return tweets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GetNewFeedResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+        '404':
+          description: Tweet not found
+  /tweets/{tweet_id}/children:
+    get:
+      tags:
+        - tweets
+      summary: Get tweets children
+      description: Get tweets with pagination.
+      operationId: getTweets
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: tweet_id
+          in: path
+          required: true
+          description: Tweet id
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: true
+          description: Limit of tweets per page.
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: true
+          description: Page number of the tweets pagination.
+          schema:
+            type: integer
+        - name: tweet_type
+          in: query
+          required: true
+          description: Tweet type
+          schema:
+            type: number
+            enum:
+              - '0' # Tweet
+              - '1' # Retweet
+              - '2' # Comment
+              - '3' # QuoteTweet
+      responses:
+        '200':
+          description: Return tweets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GetNewFeedResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+        '404':
+          description: Tweet not found
 
+  /likes/:
+    post:
+      tags:
+        - likes
+      summary: Like tweet
+      description: Like tweet
+      operationId: likeTweet
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        description: Like tweet
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  example: "6682cbd55a87ec3fdb06cd76"
+      responses:
+        '200':
+          description: Like tweet successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Like tweet successfully
 
+        '404':
+          description: Tweet not found
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+  /likes/{tweet_id}:
+    post:
+      tags:
+        - likes
+      summary: Unlike tweet
+      description: Unlike tweet
+      operationId: unlikeTweet
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Tweet id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Unlike tweet successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unlike tweet successfully
+
+        '404':
+          description: Tweet not found
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+
+  /search:
+    get:
+      tags:
+        - search
+      summary: Search
+      description: Search
+      operationId: search
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: content
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: true
+          description: Limit of tweets per page.
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: true
+          description: Page number of the tweets pagination.
+          schema:
+            type: integer
+        - name: media_type
+          in: query
+          required: false
+          description: Media type
+          schema:
+            type: string
+            enum:
+              - Image
+              - Video
+              - HLS
+        - name: people_follow
+          in: query
+          required: false
+          description: People follow
+          schema:
+            type: string
+            enum:
+              - '0' # Anyone
+              - '1' # Following
+      responses:
+        '200':
+          description: Return search result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+        '404':
+          description: Tweet not found
+
+  /conversations/{receiver_id}:
+    get:
+      tags:
+        - conversations
+      summary: Search
+      description: Search
+      operationId: search
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: receiver_id
+          in: path
+          required: true
+          description: Receiver id
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: true
+          description: Limit of tweets per page.
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: true
+          description: Page number of the tweets pagination.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Return search result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtExpired'
+        '404':
+          description: Tweet not found
 
 components:
   schemas:
@@ -662,6 +1249,749 @@ components:
             cover_photo:
               type: string
               example: ""
+
+    EnumMediaType:
+      type: integer
+      enum:
+        - 0 # Image
+        - 1 # Video
+        - 2 # HLS
+
+      description: |
+        Media type:
+        - 0: Image
+        - 1: Video
+        - 2: HLS
+
+    EnumEncodingStatus:
+      type: integer
+      enum:
+        - 0 # Pending
+        - 1 # Processing
+        - 2 # Completed
+        - 3 # Failed
+        - 4 # NotFound
+      description: |
+        Encoding status of the video:
+        - 0: Pending
+        - 1: Processing
+        - 2: Completed
+        - 3: Failed
+        - 4: NotFound
+
+    UploadImageSuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Upload image successfully
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: "https://api.minhle3107.site/api/v1/static/image/ef690f27ae4a6c6647b99cf01.jpeg"
+              type:
+                type: integer
+                example: 0
+
+    UploadVideoSuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Upload video successfully
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: "https://twitter-clone-2024-minhle-ap-southeast-1.s3.ap-southeast-1.amazonaws.com/videos/3DVeNxAsjawyS9g7VTs46.mov"
+              type:
+                type: integer
+                example: 1
+    UploadVideoHLSSuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Upload video HLS successfully
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: "https://api.minhle3107.site/api/v1/static/video-hls/JfeJaOvOeErgloCT8unHR/master.m3u8"
+              type:
+                type: integer
+                example: 2
+
+    VideoStatusResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Get video status successfully
+        result:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: 669dcbbbf8bc4a9d56a146e5
+            name:
+              type: string
+              example: OPBF0u9CK-ruw9RinCXS5
+            status:
+              type: integer
+              enum: [ 0, 1, 2, 3, 4 ]
+              description: |
+                Encoding status of the video:
+                - 0: Pending
+                - 1: Processing
+                - 2: Completed
+                - 3: Failed
+                - 4: NotFound
+            message:
+              type: string
+              example: ""
+            created_at:
+              type: string
+              format: date-time
+              example: 2024-07-22T03:02:19.759Z
+            updated_at:
+              type: string
+              format: date-time
+              example: 2024-07-22T03:02:28.995Z
+
+    TweetRequest:
+      type: object
+      properties:
+        type:
+          type: integer
+          description: Type of the tweet
+          example: 0
+        audience:
+          type: integer
+          description: Audience of the tweet
+          example: 0
+        parent_id:
+          type: string
+          description: ID of the parent tweet if any
+          nullable: true
+          example: null
+        content:
+          type: string
+          description: Content of the tweet
+          example: "Minh Le"
+        hashtags:
+          type: array
+          items:
+            type: string
+          description: Hashtags in the tweet
+          example: [ ]
+        mentions:
+          type: array
+          items:
+            type: string
+          description: Mentions in the tweet
+          example: [ ]
+        medias:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: integer
+                description: Type of the media
+                example: 1
+              url:
+                type: string
+                description: URL of the media
+                example: "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg"
+
+    TweetCreatedResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Tweet created successfully
+        result:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: 669dd21af8bc4a9d56a146e7
+            user_id:
+              type: string
+              example: 6682cbd55a87ec3fdb06cd76
+            type:
+              type: integer
+              example: 0
+            audience:
+              type: integer
+              example: 0
+            content:
+              type: string
+              example: Minh Le
+            parent_id:
+              type: string
+              nullable: true
+              example: null
+            hashtags:
+              type: array
+              items:
+                type: string
+              example: [ ]
+            mentions:
+              type: array
+              items:
+                type: string
+              example: [ ]
+            medias:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: integer
+                    example: 1
+                  url:
+                    type: string
+                    example: "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg"
+            guest_views:
+              type: integer
+              example: 0
+            user_views:
+              type: integer
+              example: 0
+            created_at:
+              type: string
+              format: date-time
+              example: 2024-07-22T03:29:30.310Z
+            updated_at:
+              type: string
+              format: date-time
+              example: 2024-07-22T03:29:30.310Z
+    GetTweetResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Get tweet successfully
+        result:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: 6671417a2adb528d76cd29ec
+            user_id:
+              type: string
+              example: 667141772adb528d76cd282a
+            type:
+              type: integer
+              example: 0
+            audience:
+              type: integer
+              example: 0
+            content:
+              type: string
+              example: "Who is Minh Le?"
+            parent_id:
+              type: string
+              nullable: true
+              example: null
+            hashtags:
+              type: array
+              items:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  name:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+              example:
+                - _id: "667141792adb528d76cd28c0"
+                  name: "go"
+                  created_at: "2024-06-18T08:12:41.690Z"
+                - _id: "667141792adb528d76cd28c1"
+                  name: "mysql"
+                  created_at: "2024-06-18T08:12:41.691Z"
+                - _id: "667141792adb528d76cd28c2"
+                  name: "nodejs"
+                  created_at: "2024-06-18T08:12:41.691Z"
+            mentions:
+              type: array
+              items:
+                type: string
+              example: [ ]
+            medias:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: integer
+                  url:
+                    type: string
+              example: [ ]
+            guest_views:
+              type: integer
+              example: 0
+            user_views:
+              type: integer
+              example: 19
+            created_at:
+              type: string
+              format: date-time
+              example: "2024-06-18T08:12:42.070Z"
+            updated_at:
+              type: string
+              format: date-time
+              example: "2024-07-22T03:32:08.978Z"
+            bookmarks:
+              type: integer
+              example: 0
+            likes:
+              type: integer
+              example: 0
+            retweet_count:
+              type: integer
+              example: 0
+            comment_count:
+              type: integer
+              example: 3
+            quote_count:
+              type: integer
+              example: 0
+    GetNewFeedResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Get new feeds successfully
+        result:
+          type: object
+          properties:
+            tweets:
+              type: array
+              items:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 669dd21af8bc4a9d56a146e7
+                  user_id:
+                    type: string
+                    example: 6682cbd55a87ec3fdb06cd76
+                  type:
+                    type: integer
+                    example: 0
+                  audience:
+                    type: integer
+                    example: 0
+                  content:
+                    type: string
+                    example: Minh Le
+                  parent_id:
+                    type: string
+                    nullable: true
+                    example: null
+                  hashtags:
+                    type: array
+                    items:
+                      type: string
+                  mentions:
+                    type: array
+                    items:
+                      type: string
+                  medias:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: integer
+                          example: 1
+                        url:
+                          type: string
+                          example: https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg
+                  guest_views:
+                    type: integer
+                    example: 0
+                  user_views:
+                    type: integer
+                    example: 1
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: 2024-07-22T03:29:30.310Z
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: 2024-07-22T03:35:46.838Z
+                  user:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: 6682cbd55a87ec3fdb06cd76
+                        name:
+                          type: string
+                          example: Minh Lê
+                        email:
+                          type: string
+                          example: minhlxph30963+2@fpt.edu.vn
+                        created_at:
+                          type: string
+                          format: date-time
+                          example: 2024-07-01T15:31:33.085Z
+                        updated_at:
+                          type: string
+                          format: date-time
+                          example: 2024-07-04T07:52:00.035Z
+                        verify_status:
+                          type: integer
+                          example: 1
+                        bio:
+                          type: string
+                          example: ""
+                        location:
+                          type: string
+                          example: ""
+                        website:
+                          type: string
+                          example: ""
+                        username:
+                          type: string
+                          example: user6682cbd55a87ec3fdb06cd76
+                        avatar:
+                          type: string
+                          example: ""
+                        cover_photo:
+                          type: string
+                          example: ""
+                  bookmarks:
+                    type: integer
+                    example: 0
+                  likes:
+                    type: integer
+                    example: 0
+                  retweet_count:
+                    type: integer
+                    example: 0
+                  comment_count:
+                    type: integer
+                    example: 0
+                  quote_count:
+                    type: integer
+                    example: 0
+            limit:
+              type: integer
+              example: 50
+            page:
+              type: integer
+              example: 1
+            total_page:
+              type: integer
+              example: 1
+    GetTweetChildrenResponse:
+      type: object
+      properties:
+        tweets:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                example: 667153f9a71528c072bbe476
+              user_id:
+                type: string
+                example: 666e68b4f2700de7ca56be63
+              type:
+                type: integer
+                example: 2
+              audience:
+                type: integer
+                example: 0
+              content:
+                type: string
+                example: Comment 1
+              parent_id:
+                type: string
+                example: 6671417a2adb528d76cd29ec
+              hashtags:
+                type: array
+                items:
+                  type: string
+              mentions:
+                type: array
+                items:
+                  type: string
+              medias:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: integer
+                      example: 1
+                    url:
+                      type: string
+                      example: https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg
+              guest_views:
+                type: integer
+                example: 0
+              user_views:
+                type: integer
+                example: 5
+              created_at:
+                type: string
+                format: date-time
+                example: 2024-06-18T09:31:37.678Z
+              updated_at:
+                type: string
+                format: date-time
+                example: 2024-07-22T03:54:55.321Z
+              bookmarks:
+                type: integer
+                example: 0
+              likes:
+                type: integer
+                example: 0
+              retweet_count:
+                type: integer
+                example: 0
+              comment_count:
+                type: integer
+                example: 0
+              quote_count:
+                type: integer
+                example: 0
+        tweet_type:
+          type: integer
+          example: 2
+        limit:
+          type: integer
+          example: 5
+        page:
+          type: integer
+          example: 1
+        total_page:
+          type: integer
+          example: 1
+
+    Media:
+      type: object
+      properties:
+        type:
+          type: integer
+          example: 1
+        url:
+          type: string
+          example: https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg
+
+    UserSearch:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6682cbd55a87ec3fdb06cd76
+        name:
+          type: string
+          example: Minh Lê
+        email:
+          type: string
+          example: minhlxph30963+2@fpt.edu.vn
+        created_at:
+          type: string
+          format: date-time
+          example: 2024-07-01T15:31:33.085Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2024-07-04T07:52:00.035Z
+        verify_status:
+          type: integer
+          example: 1
+        bio:
+          type: string
+          example: ""
+        location:
+          type: string
+          example: ""
+        website:
+          type: string
+          example: ""
+        username:
+          type: string
+          example: user6682cbd55a87ec3fdb06cd76
+        avatar:
+          type: string
+          example: ""
+        cover_photo:
+          type: string
+          example: ""
+
+    Tweet:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 669dd21af8bc4a9d56a146e7
+        user_id:
+          type: string
+          example: 6682cbd55a87ec3fdb06cd76
+        type:
+          type: integer
+          example: 0
+        audience:
+          type: integer
+          example: 0
+        content:
+          type: string
+          example: Minh Le
+        parent_id:
+          type: string
+          nullable: true
+          example: null
+        hashtags:
+          type: array
+          items:
+            type: string
+        mentions:
+          type: array
+          items:
+            type: string
+        medias:
+          type: array
+          items:
+            $ref: '#/components/schemas/Media'
+        guest_views:
+          type: integer
+          example: 0
+        user_views:
+          type: integer
+          example: 2
+        created_at:
+          type: string
+          format: date-time
+          example: 2024-07-22T03:29:30.310Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2024-07-22T04:29:44.760Z
+        user:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSearch'
+        bookmarks:
+          type: integer
+          example: 0
+        likes:
+          type: integer
+          example: 0
+        retweet_count:
+          type: integer
+          example: 0
+        comment_count:
+          type: integer
+          example: 0
+        quote_count:
+          type: integer
+          example: 0
+
+    SearchResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Search successfully
+        result:
+          type: object
+          properties:
+            tweets:
+              type: array
+              items:
+                $ref: '#/components/schemas/Tweet'
+            limit:
+              type: integer
+              example: 10
+            page:
+              type: integer
+              example: 1
+            total_page:
+              type: integer
+              example: 1
+
+    ConversationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Get conversations successfully
+        result:
+          type: object
+          properties:
+            limit:
+              type: integer
+              example: 2
+            page:
+              type: integer
+              example: 1
+            total_page:
+              type: integer
+              example: 7
+            conversations:
+              type: array
+              items:
+                $ref: '#/components/schemas/Conversation'
+      required:
+        - message
+        - result
+
+    Conversation:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 669ab44d9d037878d4f6fefa
+        sender_id:
+          type: string
+          example: 6682cbd55a87ec3fdb06cd76
+        receiver_id:
+          type: string
+          example: 6682ba785475240ddca4dcb9
+        content:
+          type: string
+          example: hello
+        created_at:
+          type: string
+          format: date-time
+          example: 2024-07-19T18:45:33.040Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2024-07-19T18:45:33.040Z
+      required:
+        - _id
+        - sender_id
+        - receiver_id
+        - content
+        - created_at
+        - updated_at
+
   securitySchemes:
     bearerAuth:
       type: http
