@@ -387,6 +387,8 @@ paths:
       summary: Follow user
       description: Follow user
       operationId: followUser
+      security:
+        - bearerAuth: [ ]
       requestBody:
         description: Follow user
         content:
@@ -424,6 +426,8 @@ paths:
       summary: Unfollow user
       description: Unfollow user
       operationId: unfollowUser
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: user_id
           in: path
@@ -580,6 +584,8 @@ paths:
       summary: Get video
       description: Get video
       operationId: getVideo
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: name
           in: path
@@ -657,6 +663,8 @@ paths:
       summary: Get tweet
       description: Get tweet
       operationId: getTweet
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -859,6 +867,8 @@ paths:
       summary: Search
       description: Search
       operationId: search
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: content
           in: query
@@ -925,6 +935,8 @@ paths:
       summary: Search
       description: Search
       operationId: search
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: receiver_id
           in: path
