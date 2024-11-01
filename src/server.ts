@@ -40,11 +40,16 @@ async function startServer() {
 
     io.use((socket, next) => {
       const { Authorization } = socket.handshake.auth
+      next()
     })
 
     io.on('connection', (socket) => {
       console.log(`user ${socket.id} connected`)
       const user_id = socket.handshake.auth._id
+      if (!user_id) {
+        console.error('User ID is missing in handshake auth')
+        return
+      }
       console.log(user_id)
       users[user_id] = { socket_id: socket.id }
 
@@ -57,18 +62,22 @@ async function startServer() {
           return
         }
 
-        await databaseService.conversations.insertOne(
-          new Conversation({
-            sender_id: new ObjectId(data.from),
-            receiver_id: new ObjectId(data.to),
-            content: data.content
-          })
-        )
+        try {
+          await databaseService.conversations.insertOne(
+            new Conversation({
+              sender_id: new ObjectId(data.from),
+              receiver_id: new ObjectId(data.to),
+              content: data.content
+            })
+          )
 
-        socket.to(receiver_socket_id).emit('receive_private_message', {
-          content: data.content,
-          from: user_id
-        })
+          socket.to(receiver_socket_id).emit('receive_private_message', {
+            content: data.content,
+            from: user_id
+          })
+        } catch (error) {
+          console.error('Failed to insert conversation:', error)
+        }
       })
 
       socket.on('disconnect', () => {
